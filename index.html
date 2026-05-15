@@ -3,67 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic YT Clips</title>
+    <title>YT Clipper</title>
     <style>
-        body { margin: 0; background-color: #111; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }
-        #player-container { width: 100%; max-width: 800px; aspect-ratio: 16/9; background: black; }
-        #status { margin-top: 15px; font-size: 18px; color: #aaa; }
+        body { margin: 0; padding: 0; background-color: #0f0f0f; color: white; font-family: "YouTube Sans", Roboto, Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        #install-page { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
+        #install-page h1 { font-size: 48px; margin-bottom: 10px; }
+        #install-page p.subtitle { font-size: 18px; color: #aaa; max-width: 500px; margin-bottom: 40px; }
+
+        .drag-instruction { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 15px; }
+        
+        .bookmarklet-btn { display: inline-block; background-color: #065fd4; color: white; padding: 18px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; box-shadow: 0 4px 15px rgba(6, 95, 212, 0.4); transition: transform 0.1s, box-shadow 0.2s; cursor: grab; border: 3px dashed rgba(255,255,255,0.5); }
+        .bookmarklet-btn:hover { background-color: #1a73e8; box-shadow: 0 6px 20px rgba(6, 95, 212, 0.6); }
+        .bookmarklet-btn:active { transform: scale(0.98); cursor: grabbing; }
+        
+        .help-text { margin-top: 50px; font-size: 14px !important; color: #606060 !important; border-top: 1px solid #2a2a2a; padding-top: 20px; }
+        .kbd { background-color: #2a2a2a; border-radius: 3px; border: 1px solid #444; color: #eee; padding: 1px 5px; font-family: monospace; }
+
+        #player-container { display: none; width: 100%; max-width: 100%; aspect-ratio: 16/9; background: black; flex: 1; }
+        #status { display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8); color: #aaa; padding: 10px; text-align: center; font-size: 14px; z-index: 100; }
+        
+        #fallback-page { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; overflow-y: auto; }
+        .fallback-link { display: block; background: #222; color: #3ea6ff; text-decoration: none; padding: 15px 25px; margin-bottom: 10px; border-radius: 8px; font-size: 18px; width: 100%; max-width: 400px; border: 1px solid #444; transition: background 0.2s; }
+        .fallback-link:hover { background: #333; }
     </style>
 </head>
 <body>
 
-    <div id="player-container">
-        <div id="player"></div>
-    </div>
+    <div id="player-container"><div id="player"></div></div>
     <div id="status">Loading clips...</div>
 
+    <div id="fallback-page">
+        <h2>🔒 Embedding Disabled</h2>
+        <p style="color: #aaa; max-width: 500px; margin-bottom: 20px;">The creator of this video does not allow it to be played outside of YouTube. Click the links below to watch the clips directly on YouTube.</p>
+        <div id="fallback-links-container"></div>
+    </div>
+
+    <div id="install-page">
+        <h1>✂️ YT Clipper</h1>
+        <p class="subtitle">A simple bookmarklet to clip and share segments of YouTube videos.</p>
+        <div class="drag-instruction">👇 Drag this button to your Bookmarks Bar 👇</div>
+        
+        <a class="bookmarklet-btn" title="YT Clipper" href="javascript:(function()%7Bif(document.getElementById(%27yt-clipper-ui%27))return%3Bfor(let%20i%3D0%3Bi%3ClocalStorage.length%3Bi%2B%2B)%7Blet%20k%3DlocalStorage.key(i)%3Bif(k%26%26k.startsWith(%27yt-clips-%27))%7Blet%20v%3Dk.replace(%27yt-clips-%27%2C%27%27)%3Blet%20c%3DJSON.parse(localStorage.getItem(k))%3Blet%20l%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Bif(!l%5Bv%5D)%7Bl%5Bv%5D%3D%7Btitle%3A%22Video%20%22%2Bv%2Cclips%3Ac%7D%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(l))%3B%7DlocalStorage.removeItem(k)%3B%7D%7Dconst%20B%3D%22https%3A%2F%2Fbindzume.github.io%2Fyt-clipper-bookmarklet%2F%22%3Blet%20t%3Dnull%2Cn%3Dnull%3Bconst%20d%3Dnew%20URLSearchParams(window.location.search).get(%22v%22)%2CvEl%3Ddocument.querySelector(%22video%22)%3Bconst%20mk%3D(t%2Ci%2Cc%2Cx)%3D%3E%7Blet%20e%3Ddocument.createElement(t)%3Bif(i)e.id%3Di%3Bif(c)e.style.cssText%3Dc%3Bif(x)e.textContent%3Dx%3Breturn%20e%3B%7D%3Bconst%20gL%3D()%3D%3EJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Bconst%20sL%3D(l)%3D%3ElocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(l))%3Bconst%20fT%3D(s)%3D%3E%7Bif(s%3D%3D%3Dnull)return%22--%22%3Blet%20m%3DMath.floor(s%2F60)%2CS%3DMath.floor(s%2560).toString().padStart(2%2C%220%22)%3Breturn%20%60%24%7Bm%7D%3A%24%7BS%7D%60%3B%7D%3Bconst%20u%3Dmk(%22div%22%2C%22yt-clipper-ui%22%2C%22position%3Afixed%3Btop%3A60px%3Bright%3A20px%3Bbackground%3Argba(0%2C0%2C0%2C0.95)%3Bcolor%3Awhite%3Bpadding%3A15px%3Bz-index%3A999999%3Bborder-radius%3A8px%3Bfont-family%3Asans-serif%3Bwidth%3A250px%3Bbox-shadow%3A0%204px%2010px%20rgba(0%2C0%2C0%2C0.5)%3Bborder%3A1px%20solid%20%23333%3B%22)%3Bu.appendChild(mk(%22h3%22%2C%22%22%2C%22margin-top%3A0%3Bborder-bottom%3A1px%20solid%20%23555%3Bpadding-bottom%3A5px%3B%22%2C%22%E2%9C%82%EF%B8%8F%20YT%20Clipper%22))%3Bconst%20bS%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bborder-radius%3A4px%3Bborder%3Anone%3Bcursor%3Apointer%3B%22%2C%22Mark%20Start%22)%3Bconst%20bE%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bborder-radius%3A4px%3Bborder%3Anone%3Bcursor%3Apointer%3B%22%2C%22Mark%20End%22)%3Bconst%20sD%3Dmk(%22div%22%2C%22%22%2C%22margin-bottom%3A10px%3Bfont-size%3A12px%3Bcolor%3A%23ccc%3Btext-align%3Acenter%3B%22%2C%22Start%3A%20--%20%7C%20End%3A%20--%22)%3Bconst%20bV%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A10px%3Bpadding%3A8px%3Bbackground%3A%23065fd4%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22Save%20Clip%22)%3Bu.appendChild(bS)%3Bu.appendChild(bE)%3Bu.appendChild(sD)%3Bu.appendChild(bV)%3Bu.appendChild(mk(%22h4%22%2C%22%22%2C%22margin%3A0%200%205px%200%3Bfont-size%3A13px%3Bcolor%3A%23aaa%3B%22%2C%22Current%20Video%20Clips%22))%3Bconst%20cL%3Dmk(%22div%22%2C%22%22%2C%22font-size%3A12px%3Bmax-height%3A100px%3Boverflow-y%3Aauto%3Bbackground%3A%23222%3Bpadding%3A5px%3Bborder-radius%3A4px%3Bmargin-bottom%3A10px%3B%22)%3Bu.appendChild(cL)%3Bconst%20bSh%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bbackground%3A%23107c10%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Generate%20Share%20Link%22)%3Bconst%20bD%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A10px%3Bpadding%3A6px%3Bbackground%3A%23673ab7%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Open%20Dashboard%22)%3Bconst%20bC%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bpadding%3A6px%3Bbackground%3A%23cc0000%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Close%22)%3Bu.appendChild(bSh)%3Bu.appendChild(bD)%3Bu.appendChild(bC)%3Bdocument.body.appendChild(u)%3Bconst%20lC%3D()%3D%3E%7BcL.textContent%3D%22%22%3Bif(!d)%7BcL.appendChild(mk(%22span%22%2C%22%22%2C%22color%3A%23ff5555%22%2C%22Not%20a%20video%20page.%22))%3Breturn%3B%7Dlet%20l%3DgL()%2CvD%3Dl%5Bd%5D%7C%7C%7Bclips%3A%5B%5D%7D%3Bif(vD.clips.length%3D%3D%3D0)%7BcL.appendChild(mk(%22i%22%2C%22%22%2C%22%22%2C%22No%20clips%20yet.%22))%3B%7Delse%7BvD.clips.forEach((c%2Ci)%3D%3E%7BcL.appendChild(mk(%22div%22%2C%22%22%2C%22margin-bottom%3A4px%3Bborder-bottom%3A1px%20solid%20%23444%3Bpadding-bottom%3A2px%3B%22%2C%60Clip%20%24%7Bi%2B1%7D%3A%20%24%7BfT(c.start)%7D%20-%20%24%7BfT(c.end)%7D%60))%3B%7D)%3B%7D%7D%3Bconst%20uS%3D()%3D%3E%7BsD.textContent%3D%60Start%3A%20%24%7BfT(t)%7D%20%7C%20End%3A%20%24%7BfT(n)%7D%60%3B%7D%3BbS.onclick%3D()%3D%3E%7Bif(vEl)%7Bt%3DvEl.currentTime%3BuS()%3B%7D%7D%3BbE.onclick%3D()%3D%3E%7Bif(vEl)%7Bn%3DvEl.currentTime%3BuS()%3B%7D%7D%3BbV.onclick%3D()%3D%3E%7Bif(t%21%3D%3Dnull%26%26n%21%3D%3Dnull%26%26n%3Et%26%26d)%7Blet%20l%3DgL()%3Bif(!l%5Bd%5D)%7Blet%20T%3Ddocument.title.replace(%22%20-%20YouTube%22%2C%22%22)%3Bl%5Bd%5D%3D%7Btitle%3AT%2Cclips%3A%5B%5D%7D%3B%7Dl%5Bd%5D.clips.push(%7Bstart%3AMath.round(t*10)%2F10%2Cend%3AMath.round(n*10)%2F10%7D)%3BsL(l)%3Bt%3Dnull%3Bn%3Dnull%3BuS()%3BlC()%3B%7Delse%20alert(%22Valid%20start%2Fend%20time%20required%2C%20or%20not%20on%20a%20video%20page.%22)%3B%7D%3BbSh.onclick%3D()%3D%3E%7Blet%20l%3DgL()%2CvD%3Dl%5Bd%5D%3Bif(!vD%7C%7CvD.clips.length%3D%3D%3D0)return%20alert(%22No%20clips%20for%20this%20video.%22)%3Blet%20cS%3DvD.clips.map(c%3D%3E%60%24%7Bc.start%7D-%24%7Bc.end%7D%60).join(%22%2C%22)%3Bprompt(%22Copy%20your%20link%3A%22%2C%60%24%7BB%7D%3Fv%3D%24%7Bd%7D%26clips%3D%24%7BcS%7D%60)%3B%7D%3BbC.onclick%3D()%3D%3E%7Bdocument.body.removeChild(u)%3Blet%20D%3Ddocument.getElementById(%27yt-clipper-dash%27)%3Bif(D)document.body.removeChild(D)%3B%7D%3BbD.onclick%3D()%3D%3E%7Bif(document.getElementById(%27yt-clipper-dash%27))return%3Blet%20D%3Dmk(%22div%22%2C%22yt-clipper-dash%22%2C%22position%3Afixed%3Btop%3A5%25%3Bleft%3A50%25%3Btransform%3AtranslateX(-50%25)%3Bwidth%3A90%25%3Bmax-width%3A800px%3Bheight%3A90%25%3Bbackground%3A%23111%3Bcolor%3Awhite%3Bz-index%3A999999%3Bborder-radius%3A12px%3Bpadding%3A20px%3Bbox-sizing%3Aborder-box%3Bfont-family%3Asans-serif%3Bbox-shadow%3A0%2010px%2050px%20rgba(0%2C0%2C0%2C0.9)%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bborder%3A1px%20solid%20%23444%3B%22)%3Blet%20H%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bborder-bottom%3A1px%20solid%20%23333%3Bpadding-bottom%3A15px%3Bmargin-bottom%3A15px%3B%22)%3BH.appendChild(mk(%22h2%22%2C%22%22%2C%22margin%3A0%3B%22%2C%22%F0%9F%93%9A%20Clip%20Dashboard%22))%3Blet%20cD%3Dmk(%22button%22%2C%22%22%2C%22background%3Anone%3Bcolor%3A%23aaa%3Bborder%3Anone%3Bfont-size%3A28px%3Bcursor%3Apointer%3B%22%2C%22%C3%97%22)%3BcD.onclick%3D()%3D%3Edocument.body.removeChild(D)%3BH.appendChild(cD)%3BD.appendChild(H)%3Blet%20T%3Dmk(%22div%22%2C%22%22%2C%22margin-bottom%3A15px%3Bdisplay%3Aflex%3Bgap%3A10px%3B%22)%3Blet%20bEx%3Dmk(%22button%22%2C%22%22%2C%22padding%3A8px%2015px%3Bbackground%3A%23065fd4%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22%E2%AC%87%EF%B8%8F%20Export%20JSON%22)%3Blet%20bIm%3Dmk(%22button%22%2C%22%22%2C%22padding%3A8px%2015px%3Bbackground%3A%23107c10%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22%E2%AC%86%EF%B8%8F%20Import%20JSON%22)%3BT.appendChild(bEx)%3BT.appendChild(bIm)%3BD.appendChild(T)%3Blet%20L%3Dmk(%22div%22%2C%22%22%2C%22flex%3A1%3Boverflow-y%3Aauto%3Bbackground%3A%231a1a1a%3Bborder-radius%3A8px%3Bpadding%3A15px%3B%22)%3BD.appendChild(L)%3Bconst%20rL%3D()%3D%3E%7BL.textContent%3D%22%22%3Blet%20l%3DgL()%2CK%3DObject.keys(l)%3Bif(K.length%3D%3D%3D0)%7BL.appendChild(mk(%22div%22%2C%22%22%2C%22padding%3A30px%3Btext-align%3Acenter%3Bcolor%3A%23666%3B%22%2C%22No%20saved%20clips%20yet.%20Go%20watch%20some%20videos!%22))%3Breturn%3B%7DK.forEach(v%3D%3E%7Blet%20V%3Dl%5Bv%5D%3Bif(!V.clips%7C%7CV.clips.length%3D%3D%3D0)return%3Blet%20C%3Dmk(%22div%22%2C%22%22%2C%22background%3A%232a2a2a%3Bmargin-bottom%3A10px%3Bpadding%3A15px%3Bborder-radius%3A8px%3Bdisplay%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bborder%3A1px%20solid%20%23333%3B%22)%3Blet%20I%3Dmk(%22div%22%2C%22%22%2C%22flex%3A1%3Bpadding-right%3A15px%3B%22)%3BI.appendChild(mk(%22div%22%2C%22%22%2C%22font-weight%3Abold%3Bmargin-bottom%3A5px%3Bfont-size%3A16px%3Bline-height%3A1.3%3B%22%2CV.title%7C%7C%60Video%20ID%3A%20%24%7Bv%7D%60))%3BI.appendChild(mk(%22div%22%2C%22%22%2C%22color%3A%23aaa%3Bfont-size%3A13px%3B%22%2C%60%24%7BV.clips.length%7D%20clip(s)%20saved.%60))%3BC.appendChild(I)%3Blet%20A%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bgap%3A10px%3Balign-items%3Acenter%3B%22)%3Blet%20P%3Dmk(%22a%22%2C%22%22%2C%22padding%3A8px%2018px%3Bbackground%3A%23fff%3Bcolor%3A%23000%3Btext-decoration%3Anone%3Bborder-radius%3A20px%3Bfont-weight%3Abold%3Bfont-size%3A14px%3Bwhite-space%3Anowrap%3B%22%2C%22%E2%96%B6%20Play%22)%3BP.href%3D%60%24%7BB%7D%3Fv%3D%24%7Bv%7D%26clips%3D%24%7BV.clips.map(c%3D%3E%60%24%7Bc.start%7D-%24%7Bc.end%7D%60).join(%22%2C%22)%7D%60%3BP.target%3D%22_blank%22%3BA.appendChild(P)%3Blet%20dL%3Dmk(%22button%22%2C%22%22%2C%22padding%3A8px%2012px%3Bbackground%3Atransparent%3Bcolor%3A%23cc0000%3Bborder%3A1px%20solid%20%23cc0000%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bwhite-space%3Anowrap%3B%22%2C%22Delete%22)%3BdL.onclick%3D()%3D%3E%7Bif(confirm(%22Delete%20clips%20for%20this%20video%3F%22))%7Blet%20l%3DgL()%3Bdelete%20l%5Bv%5D%3BsL(l)%3BrL()%3BlC()%3B%7D%7D%3BA.appendChild(dL)%3BC.appendChild(A)%3BL.appendChild(C)%3B%7D)%3B%7D%3BbEx.onclick%3D()%3D%3E%7Blet%20a%3Ddocument.createElement(%22a%22)%3Ba.href%3D%22data%3Atext%2Fjson%3Bcharset%3Dutf-8%2C%22%2BencodeURIComponent(JSON.stringify(gL()%2Cnull%2C2))%3Ba.download%3D%22yt-clipper-backup.json%22%3Ba.click()%3B%7D%3BbIm.onclick%3D()%3D%3E%7Blet%20i%3Ddocument.createElement(%22input%22)%3Bi.type%3D%22file%22%3Bi.accept%3D%22.json%22%3Bi.onchange%3De%3D%3E%7Blet%20f%3De.target.files%5B0%5D%3Bif(!f)return%3Blet%20r%3Dnew%20FileReader()%3Br.onload%3Dev%3D%3E%7Btry%7Blet%20M%3DJSON.parse(ev.target.result)%3BsL(%7B...gL()%2C...M%7D)%3BrL()%3BlC()%3Balert(%22Import%20successful!%22)%3B%7Dcatch(e)%7Balert(%22Invalid%20JSON%20file.%22)%3B%7D%7D%3Br.readAsText(f)%3B%7D%3Bi.click()%3B%7D%3BrL()%3Bdocument.body.appendChild(D)%3B%7D%3BlC()%3B%7D)()%3B">
+            YT Clipper
+        </a>
+        <div class="help-text">
+            <p>Don't see your bookmarks bar? Try <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span> (Windows) or <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span> (Mac).</p>
+        </div>
+    </div>
+
     <script>
-        // 1. Parse the URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('v');
-        const clipsParam = urlParams.get('clips'); // Expected format: "10-20,45-60"
+        const clipsParam = urlParams.get('clips'); 
         
+        const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        };
+
+        if (!videoId) {
+            document.getElementById('install-page').style.display = 'flex';
+        } else {
+            document.getElementById('player-container').style.display = 'block';
+            document.getElementById('status').style.display = 'block';
+            loadYouTubeAPI();
+        }
+
         let clips = [];
         let currentClipIndex = 0;
         let player;
         let timeChecker;
-
-        // Convert the string "10-20,45-60" into an array of objects
-        if (clipsParam) {
-            clips = clipsParam.split(',').map(clip => {
-                const parts = clip.split('-');
-                return { start: parseFloat(parts[0]), end: parseFloat(parts[1]) };
-            });
-        }
-
         const statusText = document.getElementById('status');
 
-        // 2. Load the YouTube IFrame API
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        function loadYouTubeAPI() {
+            if (clipsParam) {
+                clips = clipsParam.split(',').map(clip => {
+                    const parts = clip.split('-');
+                    return { start: parseFloat(parts[0]), end: parseFloat(parts[1]) };
+                });
+            }
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
 
-        // 3. Initialize the Player
-        function onYouTubeIframeAPIReady() {
-            if (!videoId || clips.length === 0) {
-                statusText.innerText = "Error: Missing video ID or clips in URL.";
+        window.onYouTubeIframeAPIReady = function() {
+            if (clips.length === 0) {
+                statusText.innerText = "Error: Missing clips in URL.";
                 return;
             }
-
             player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
                 videoId: videoId,
                 playerVars: { 
                     'playsinline': 1, 
-                    'start': Math.floor(clips[0].start),
+                    'start': Math.floor(clips[0].start), 
                     'autoplay': 1,
-                    'controls': 1
+                    'controls': 1 
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
+                    'onError': onPlayerError 
                 }
             });
         }
@@ -71,35 +115,43 @@
         function onPlayerReady(event) {
             statusText.innerText = `Playing clip 1 of ${clips.length}`;
             event.target.playVideo();
-            // Start checking the time every 100ms
             timeChecker = setInterval(checkTime, 100);
         }
 
-        function onPlayerStateChange(event) {
-            // If the user manually pauses, we still keep the interval running, 
-            // but it won't trigger jumps unless the time exceeds the end time.
+        function onPlayerError(event) {
+            if (event.data === 101 || event.data === 150) {
+                document.getElementById('player-container').style.display = 'none';
+                document.getElementById('status').style.display = 'none';
+                document.getElementById('fallback-page').style.display = 'flex';
+                
+                const container = document.getElementById('fallback-links-container');
+                clips.forEach((clip, index) => {
+                    const link = document.createElement('a');
+                    link.className = 'fallback-link';
+                    link.target = '_blank'; 
+                    link.href = `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(clip.start)}s`;
+                    link.innerText = `▶ Play Clip ${index + 1} (${formatTime(clip.start)} - ${formatTime(clip.end)})`;
+                    container.appendChild(link);
+                });
+            } else {
+                statusText.innerText = `An error occurred playing this video. (Code: ${event.data})`;
+            }
         }
 
-        // 4. The Magic: Checking time and skipping
         function checkTime() {
-            if (!player || !player.getCurrentTime) return;
-            
+            if (!player || !player.getCurrentTime || clips.length === 0) return;
             const currentTime = player.getCurrentTime();
             const currentClip = clips[currentClipIndex];
 
-            // If we reach the end of the current clip
             if (currentTime >= currentClip.end) {
                 currentClipIndex++;
-                
                 if (currentClipIndex < clips.length) {
-                    // Jump to the next clip
                     player.seekTo(clips[currentClipIndex].start);
                     statusText.innerText = `Playing clip ${currentClipIndex + 1} of ${clips.length}`;
                 } else {
-                    // All clips finished
                     player.pauseVideo();
                     statusText.innerText = "All clips finished!";
-                    clearInterval(timeChecker);
+                    clearInterval(timeChecker); 
                 }
             }
         }
