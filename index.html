@@ -695,22 +695,88 @@ const render=()=>{
     }
 
     clips.forEach((c,i)=>{
-        let row=mk('div','','display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;gap:4px;');
-        let txt=mk('span','','flex:1;',`${i+1}. ${fT(c.start)}-${fT(c.end)}`);
+    let row=mk(
+        'div',
+        '',
+        'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;gap:4px;'
+    );
 
-        let del=mk('button','','background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','X');
-        del.onclick=()=>{
-            if(confirm('Remove clip?')){
-                clips.splice(i,1);
-                saveData(lib,vD);
-                render();
-            }
-        };
+    let txt=mk(
+        'span',
+        '',
+        'flex:1;',
+        `${i+1}. ${fT(c.start)}-${fT(c.end)}`
+    );
 
-        row.appendChild(txt);
-        row.appendChild(del);
-        cL.appendChild(row);
-    });
+    let btnGroup=mk(
+        'div',
+        '',
+        'display:flex;gap:2px;align-items:center;'
+    );
+
+    let up=mk(
+        'button',
+        '',
+        'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
+        '↑'
+    );
+
+    let down=mk(
+        'button',
+        '',
+        'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
+        '↓'
+    );
+
+    let del=mk(
+        'button',
+        '',
+        'background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
+        'X'
+    );
+
+    up.disabled=i===0;
+    down.disabled=i===clips.length-1;
+
+    up.style.opacity=i===0?'0.35':'1';
+    down.style.opacity=i===clips.length-1?'0.35':'1';
+
+    up.onclick=()=>{
+        if(i>0){
+            let tmp=clips[i];
+            clips[i]=clips[i-1];
+            clips[i-1]=tmp;
+            saveData(lib,vD);
+            render();
+        }
+    };
+
+    down.onclick=()=>{
+        if(i<clips.length-1){
+            let tmp=clips[i];
+            clips[i]=clips[i+1];
+            clips[i+1]=tmp;
+            saveData(lib,vD);
+            render();
+        }
+    };
+
+    del.onclick=()=>{
+        if(confirm('Remove clip?')){
+            clips.splice(i,1);
+            saveData(lib,vD);
+            render();
+        }
+    };
+
+    btnGroup.appendChild(up);
+    btnGroup.appendChild(down);
+    btnGroup.appendChild(del);
+
+    row.appendChild(txt);
+    row.appendChild(btnGroup);
+    cL.appendChild(row);
+});
 };
 
 montageSelect.onchange=e=>{
@@ -1236,27 +1302,68 @@ ${sectionLines}
             }
 
             manualClips.forEach((clip, index) => {
-                const row = document.createElement("div");
-                row.className = "manual-clip-item";
+    const row = document.createElement("div");
+    row.className = "manual-clip-item";
 
-                const text = document.createElement("span");
-                text.textContent = `${index + 1}. ${formatTime(clip.start)} - ${formatTime(clip.end)}`;
+    const text = document.createElement("span");
+    text.textContent = `${index + 1}. ${formatTime(clip.start)} - ${formatTime(clip.end)}`;
 
-                const removeBtn = document.createElement("button");
-                removeBtn.className = "manual-btn red";
-                removeBtn.style.padding = "5px 9px";
-                removeBtn.textContent = "Remove";
+    const buttons = document.createElement("div");
+    buttons.style.cssText = "display:flex;gap:6px;align-items:center;";
 
-                removeBtn.onclick = () => {
-                    manualClips.splice(index, 1);
-                    renderManualClips();
-                    manualSetMessage("Clip removed.");
-                };
+    const upBtn = document.createElement("button");
+    upBtn.className = "manual-btn gray";
+    upBtn.style.padding = "5px 9px";
+    upBtn.textContent = "↑";
+    upBtn.disabled = index === 0;
+    upBtn.style.opacity = index === 0 ? "0.35" : "1";
 
-                row.appendChild(text);
-                row.appendChild(removeBtn);
-                list.appendChild(row);
-            });
+    upBtn.onclick = () => {
+        if (index > 0) {
+            const tmp = manualClips[index];
+            manualClips[index] = manualClips[index - 1];
+            manualClips[index - 1] = tmp;
+            renderManualClips();
+            manualSetMessage("Clip moved up.");
+        }
+    };
+
+    const downBtn = document.createElement("button");
+    downBtn.className = "manual-btn gray";
+    downBtn.style.padding = "5px 9px";
+    downBtn.textContent = "↓";
+    downBtn.disabled = index === manualClips.length - 1;
+    downBtn.style.opacity = index === manualClips.length - 1 ? "0.35" : "1";
+
+    downBtn.onclick = () => {
+        if (index < manualClips.length - 1) {
+            const tmp = manualClips[index];
+            manualClips[index] = manualClips[index + 1];
+            manualClips[index + 1] = tmp;
+            renderManualClips();
+            manualSetMessage("Clip moved down.");
+        }
+    };
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "manual-btn red";
+    removeBtn.style.padding = "5px 9px";
+    removeBtn.textContent = "Remove";
+
+    removeBtn.onclick = () => {
+        manualClips.splice(index, 1);
+        renderManualClips();
+        manualSetMessage("Clip removed.");
+    };
+
+    buttons.appendChild(upBtn);
+    buttons.appendChild(downBtn);
+    buttons.appendChild(removeBtn);
+
+    row.appendChild(text);
+    row.appendChild(buttons);
+    list.appendChild(row);
+});
         }
 
         function initializeManualClipper() {
