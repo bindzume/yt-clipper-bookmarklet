@@ -5,80 +5,928 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YT Clipper</title>
     <style>
-        body { margin: 0; padding: 0; background-color: #0f0f0f; color: white; font-family: "YouTube Sans", Roboto, Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        
-        #install-page { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
-        #install-page h1 { font-size: 48px; margin-bottom: 10px; }
-        #install-page p.subtitle { font-size: 18px; color: #aaa; max-width: 500px; margin-bottom: 40px; }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f0f;
+            color: white;
+            font-family: "YouTube Sans", Roboto, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        .drag-instruction { font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 15px; }
-        
-        .bookmarklet-btn { display: inline-block; background-color: #065fd4; color: white; padding: 18px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 20px; box-shadow: 0 4px 15px rgba(6, 95, 212, 0.4); transition: transform 0.1s, box-shadow 0.2s; cursor: grab; border: 3px dashed rgba(255,255,255,0.5); }
-        .bookmarklet-btn:hover { background-color: #1a73e8; box-shadow: 0 6px 20px rgba(6, 95, 212, 0.6); }
-        .bookmarklet-btn:active { transform: scale(0.98); cursor: grabbing; }
-        
-        .help-text { margin-top: 50px; font-size: 14px !important; color: #606060 !important; border-top: 1px solid #2a2a2a; padding-top: 20px; }
-        .kbd { background-color: #2a2a2a; border-radius: 3px; border: 1px solid #444; color: #eee; padding: 1px 5px; font-family: monospace; }
+        #install-page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-        /* FIXED LAYOUT: Player takes remaining space, status gets its own row */
-        #player-container { display: none; width: 100%; flex: 1; background: black; }
-        #status { display: none; width: 100%; background: #111; color: #aaa; padding: 15px 0; text-align: center; font-size: 16px; border-top: 1px solid #222; z-index: 100; box-sizing: border-box; }
-        
-        #fallback-page { display: none; flex: 1; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; overflow-y: auto; }
-        .fallback-link { display: block; background: #222; color: #3ea6ff; text-decoration: none; padding: 15px 25px; margin-bottom: 10px; border-radius: 8px; font-size: 18px; width: 100%; max-width: 400px; border: 1px solid #444; transition: background 0.2s; }
-        .fallback-link:hover { background: #333; }
+        #install-page h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        #install-page p.subtitle {
+            font-size: 18px;
+            color: #aaa;
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+
+        .drag-instruction {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .bookmarklet-btn {
+            display: inline-block;
+            background-color: #065fd4;
+            color: white;
+            padding: 18px 35px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(6, 95, 212, 0.4);
+            transition: transform 0.1s, box-shadow 0.2s;
+            cursor: grab;
+            border: 3px dashed rgba(255,255,255,0.5);
+        }
+
+        .bookmarklet-btn:hover {
+            background-color: #1a73e8;
+            box-shadow: 0 6px 20px rgba(6, 95, 212, 0.6);
+        }
+
+        .bookmarklet-btn:active {
+            transform: scale(0.98);
+            cursor: grabbing;
+        }
+
+        .help-text {
+            margin-top: 50px;
+            font-size: 14px !important;
+            color: #606060 !important;
+            border-top: 1px solid #2a2a2a;
+            padding-top: 20px;
+        }
+
+        .kbd {
+            background-color: #2a2a2a;
+            border-radius: 3px;
+            border: 1px solid #444;
+            color: #eee;
+            padding: 1px 5px;
+            font-family: monospace;
+        }
+
+        .github-link {
+            margin-top: 30px;
+            font-size: 14px;
+        }
+
+        .github-link a {
+            color: #888;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .github-link a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        #player-container {
+            display: none;
+            width: 100%;
+            flex: 1;
+            background: black;
+        }
+
+        #status-bar {
+            display: none;
+            width: 100%;
+            background: #111;
+            color: #aaa;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-top: 1px solid #222;
+            z-index: 100;
+            box-sizing: border-box;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .export-btn {
+            background: #107c10;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #0c5e0c;
+        }
+
+        #fallback-page {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .fallback-link {
+            display: block;
+            background: #222;
+            color: #3ea6ff;
+            text-decoration: none;
+            padding: 15px 25px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #444;
+            transition: background 0.2s;
+        }
+
+        .fallback-link:hover {
+            background: #333;
+        }
     </style>
 </head>
 <body>
 
-    <div id="player-container"><div id="player"></div></div>
-    <div id="status">Loading clips...</div>
+    <div id="player-container">
+        <div id="player"></div>
+    </div>
+
+    <div id="status-bar">
+        <span id="status-text">Loading clips...</span>
+        <button class="export-btn" id="export-btn-player">⬇️ Export MP4</button>
+    </div>
 
     <div id="fallback-page">
         <h2>🔒 Embedding Disabled</h2>
-        <p style="color: #aaa; max-width: 500px; margin-bottom: 20px;">The creator of this video does not allow it to be played outside of YouTube. Click the links below to watch the clips directly on YouTube.</p>
+        <p style="color: #aaa; max-width: 500px; margin-bottom: 20px;">
+            The creator of this video does not allow it to be played outside of YouTube.
+        </p>
+        <button class="export-btn" id="export-btn-fallback" style="margin-bottom: 20px;">
+            ⬇️ Export Montage as MP4
+        </button>
         <div id="fallback-links-container"></div>
     </div>
 
     <div id="install-page">
         <h1>✂️ YT Clipper</h1>
         <p class="subtitle">A simple bookmarklet to clip and share segments of YouTube videos.</p>
+
         <div class="drag-instruction">👇 Drag this button to your Bookmarks Bar 👇</div>
-        
-        <a class="bookmarklet-btn" title="YT Clipper" href="javascript:(function()%7Bif(document.getElementById(%27yt-clipper-ui%27))return%3Bfor(let%20i%3D0%3Bi%3ClocalStorage.length%3Bi%2B%2B)%7Blet%20k%3DlocalStorage.key(i)%3Bif(k%26%26k.startsWith(%27yt-clips-%27))%7Blet%20v%3Dk.replace(%27yt-clips-%27%2C%27%27)%3Blet%20c%3DJSON.parse(localStorage.getItem(k))%3Blet%20l%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Bif(!l%5Bv%5D)%7Bl%5Bv%5D%3D%7Btitle%3A%22Video%20%22%2Bv%2Cmontages%3A%7B%22Default%22%3Ac%7D%7D%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(l))%3B%7DlocalStorage.removeItem(k)%3B%7D%7Dconst%20B%3D%22https%3A%2F%2Fbindzume.github.io%2Fyt-clipper-bookmarklet%2F%22%3Blet%20t%3Dnull%2Cn%3Dnull%3Bconst%20d%3Dnew%20URLSearchParams(window.location.search).get(%22v%22)%3Bconst%20vEl%3Ddocument.querySelector(%22video%22)%3Blet%20actM%3D%22Default%22%3Bconst%20mk%3D(t%2Ci%2Cc%2Cx)%3D%3E%7Blet%20e%3Ddocument.createElement(t)%3Bif(i)e.id%3Di%3Bif(c)e.style.cssText%3Dc%3Bif(x)e.textContent%3Dx%3Breturn%20e%3B%7D%3Bconst%20fT%3D(s)%3D%3E%7Bif(s%3D%3D%3Dnull)return%22--%22%3Blet%20m%3DMath.floor(s%2F60)%2CS%3DMath.floor(s%2560).toString().padStart(2%2C%220%22)%3Breturn%20%60%24%7Bm%7D%3A%24%7BS%7D%60%3B%7D%3Bconst%20gD%3D()%3D%3E%7Blet%20l%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Blet%20vD%3Dl%5Bd%5D%3Bif(vD%26%26vD.clips)%7BvD.montages%3D%7B%22Default%22%3AvD.clips%7D%3Bdelete%20vD.clips%3Bl%5Bd%5D%3DvD%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(l))%3B%7Dif(!vD)vD%3D%7Btitle%3Adocument.title.replace(%22%20-%20YouTube%22%2C%22%22)%2Cmontages%3A%7B%22Default%22%3A%5B%5D%7D%7D%3Bif(!vD.montages)vD.montages%3D%7B%22Default%22%3A%5B%5D%7D%3Bif(!vD.montages%5BactM%5D)%7Blet%20keys%3DObject.keys(vD.montages)%3BactM%3Dkeys.length%3Fkeys%5B0%5D%3A%22Default%22%3B%7Dif(!vD.montages%5BactM%5D)vD.montages%5BactM%5D%3D%5B%5D%3Breturn%7Bl%2CvD%7D%3B%7D%3Bconst%20sD%3D(l%2CvD)%3D%3E%7Bl%5Bd%5D%3DvD%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(l))%3B%7D%3Bconst%20u%3Dmk(%22div%22%2C%22yt-clipper-ui%22%2C%22position%3Afixed%3Btop%3A60px%3Bright%3A20px%3Bbackground%3Argba(0%2C0%2C0%2C0.95)%3Bcolor%3Awhite%3Bpadding%3A15px%3Bz-index%3A999999%3Bborder-radius%3A8px%3Bfont-family%3Asans-serif%3Bwidth%3A260px%3Bbox-shadow%3A0%204px%2010px%20rgba(0%2C0%2C0%2C0.5)%3Bborder%3A1px%20solid%20%23333%3B%22)%3Bu.appendChild(mk(%22h3%22%2C%22%22%2C%22margin-top%3A0%3Bborder-bottom%3A1px%20solid%20%23555%3Bpadding-bottom%3A5px%3B%22%2C%22%E2%9C%82%EF%B8%8F%20YT%20Clipper%22))%3Bconst%20mRow%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bgap%3A5px%3Bmargin-bottom%3A10px%3Balign-items%3Acenter%3B%22)%3Bconst%20mSel%3Dmk(%22select%22%2C%22%22%2C%22flex%3A1%3Bbackground%3A%23222%3Bcolor%3Awhite%3Bborder%3A1px%20solid%20%23444%3Bpadding%3A4px%3Bborder-radius%3A4px%3B%22)%3Bconst%20mAdd%3Dmk(%22button%22%2C%22%22%2C%22background%3A%23065fd4%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bpadding%3A4px%208px%3Bcursor%3Apointer%3B%22%2C%22%2B%22)%3BmRow.appendChild(mSel)%3BmRow.appendChild(mAdd)%3Bu.appendChild(mRow)%3Bconst%20bS%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bborder-radius%3A4px%3Bborder%3Anone%3Bcursor%3Apointer%3B%22%2C%22Mark%20Start%22)%3Bconst%20bE%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bborder-radius%3A4px%3Bborder%3Anone%3Bcursor%3Apointer%3B%22%2C%22Mark%20End%22)%3Bconst%20sT%3Dmk(%22div%22%2C%22%22%2C%22margin-bottom%3A10px%3Bfont-size%3A12px%3Bcolor%3A%23ccc%3Btext-align%3Acenter%3B%22%2C%22Start%3A%20--%20%7C%20End%3A%20--%22)%3Bconst%20bV%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A10px%3Bpadding%3A8px%3Bbackground%3A%23065fd4%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22Save%20Clip%22)%3Bu.appendChild(bS)%3Bu.appendChild(bE)%3Bu.appendChild(sT)%3Bu.appendChild(bV)%3Bu.appendChild(mk(%22h4%22%2C%22%22%2C%22margin%3A0%200%205px%200%3Bfont-size%3A13px%3Bcolor%3A%23aaa%3B%22%2C%22Clips%20in%20Montage%22))%3Bconst%20cL%3Dmk(%22div%22%2C%22%22%2C%22font-size%3A12px%3Bmax-height%3A120px%3Boverflow-y%3Aauto%3Bbackground%3A%23222%3Bpadding%3A5px%3Bborder-radius%3A4px%3Bmargin-bottom%3A10px%3B%22)%3Bu.appendChild(cL)%3Bconst%20bSh%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A5px%3Bpadding%3A6px%3Bbackground%3A%23107c10%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Generate%20Share%20Link%22)%3Bconst%20bD%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bmargin-bottom%3A10px%3Bpadding%3A6px%3Bbackground%3A%23673ab7%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Open%20Dashboard%22)%3Bconst%20bC%3Dmk(%22button%22%2C%22%22%2C%22width%3A100%25%3Bpadding%3A6px%3Bbackground%3A%23cc0000%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3B%22%2C%22Close%22)%3Bu.appendChild(bSh)%3Bu.appendChild(bD)%3Bu.appendChild(bC)%3Bdocument.body.appendChild(u)%3Bconst%20rdr%3D()%3D%3E%7Bif(!d)%7BcL.textContent%3D%22%22%3BcL.appendChild(mk(%22span%22%2C%22%22%2C%22color%3A%23ff5555%22%2C%22Not%20a%20video%20page.%22))%3Breturn%3B%7Dlet%7Bl%2CvD%7D%3DgD()%3BmSel.textContent%3D%22%22%3BObject.keys(vD.montages).forEach(k%3D%3E%7Blet%20opt%3Dmk(%22option%22%2C%22%22%2C%22%22%2Ck)%3Bopt.value%3Dk%3Bif(k%3D%3D%3DactM)opt.selected%3Dtrue%3BmSel.appendChild(opt)%3B%7D)%3BcL.textContent%3D%22%22%3Blet%20clips%3DvD.montages%5BactM%5D%3Bif(!clips%7C%7Cclips.length%3D%3D%3D0)%7BcL.appendChild(mk(%22i%22%2C%22%22%2C%22%22%2C%22No%20clips%20yet.%22))%3B%7Delse%7Bclips.forEach((c%2Ci)%3D%3E%7Blet%20r%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bmargin-bottom%3A4px%3Bborder-bottom%3A1px%20solid%20%23444%3Bpadding-bottom%3A2px%3B%22)%3Blet%20txt%3Dmk(%22span%22%2C%22%22%2C%22flex%3A1%3B%22%2C%60%24%7Bi%2B1%7D.%20%24%7BfT(c.start)%7D-%24%7BfT(c.end)%7D%60)%3Blet%20btnGrp%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bgap%3A2px%3B%22)%3Blet%20btnUp%3Dmk(%22button%22%2C%22%22%2C%22background%3A%23444%3Bcolor%3Awhite%3Bborder%3Anone%3Bcursor%3Apointer%3Bpadding%3A2px%206px%3Bfont-size%3A10px%3B%22%2C%22%E2%86%91%22)%3Blet%20btnDn%3Dmk(%22button%22%2C%22%22%2C%22background%3A%23444%3Bcolor%3Awhite%3Bborder%3Anone%3Bcursor%3Apointer%3Bpadding%3A2px%206px%3Bfont-size%3A10px%3B%22%2C%22%E2%86%93%22)%3Blet%20btnDel%3Dmk(%22button%22%2C%22%22%2C%22background%3A%23cc0000%3Bcolor%3Awhite%3Bborder%3Anone%3Bcursor%3Apointer%3Bpadding%3A2px%206px%3Bfont-size%3A10px%3B%22%2C%22X%22)%3BbtnUp.onclick%3D()%3D%3E%7Bif(i%3E0)%7Blet%20tmp%3Dclips%5Bi%5D%3Bclips%5Bi%5D%3Dclips%5Bi-1%5D%3Bclips%5Bi-1%5D%3Dtmp%3BsD(l%2CvD)%3Brdr()%3B%7D%7D%3BbtnDn.onclick%3D()%3D%3E%7Bif(i%3Cclips.length-1)%7Blet%20tmp%3Dclips%5Bi%5D%3Bclips%5Bi%5D%3Dclips%5Bi%2B1%5D%3Bclips%5Bi%2B1%5D%3Dtmp%3BsD(l%2CvD)%3Brdr()%3B%7D%7D%3BbtnDel.onclick%3D()%3D%3E%7Bif(confirm(%22Remove%20clip%3F%22))%7Bclips.splice(i%2C1)%3BsD(l%2CvD)%3Brdr()%3B%7D%7D%3BbtnGrp.appendChild(btnUp)%3BbtnGrp.appendChild(btnDn)%3BbtnGrp.appendChild(btnDel)%3Br.appendChild(txt)%3Br.appendChild(btnGrp)%3BcL.appendChild(r)%3B%7D)%3B%7D%7D%3Bconst%20uS%3D()%3D%3E%7BsT.textContent%3D%60Start%3A%20%24%7BfT(t)%7D%20%7C%20End%3A%20%24%7BfT(n)%7D%60%7D%3BmSel.onchange%3D(e)%3D%3E%7BactM%3De.target.value%3Brdr()%3B%7D%3BmAdd.onclick%3D()%3D%3E%7Blet%20nm%3Dprompt(%22New%20Montage%20Name%3A%22)%3Bif(nm%26%26nm.trim())%7Blet%7Bl%2CvD%7D%3DgD()%3Bif(!vD.montages%5Bnm%5D)%7BvD.montages%5Bnm%5D%3D%5B%5D%3BactM%3Dnm%3BsD(l%2CvD)%3Brdr()%3B%7D%7D%7D%3BbS.onclick%3D()%3D%3E%7Bif(vEl)%7Bt%3DvEl.currentTime%3BuS()%7D%7D%3BbE.onclick%3D()%3D%3E%7Bif(vEl)%7Bn%3DvEl.currentTime%3BuS()%7D%7D%3BbV.onclick%3D()%3D%3E%7Bif(t%21%3D%3Dnull%26%26n%21%3D%3Dnull%26%26n%3Et%26%26d)%7Blet%7Bl%2CvD%7D%3DgD()%3BvD.montages%5BactM%5D.push(%7Bstart%3AMath.round(t*10)%2F10%2Cend%3AMath.round(n*10)%2F10%7D)%3BsD(l%2CvD)%3Bt%3Dnull%3Bn%3Dnull%3BuS()%3Brdr()%3B%7Delse%20alert(%22Valid%20start%2Fend%20time%20required.%22)%3B%7D%3BbSh.onclick%3D()%3D%3E%7Blet%7BvD%7D%3DgD()%3Blet%20clips%3DvD.montages%5BactM%5D%3Bif(!clips%7C%7Cclips.length%3D%3D%3D0)return%20alert(%22No%20clips%20in%20this%20montage.%22)%3Blet%20cS%3Dclips.map(c%3D%3E%60%24%7Bc.start%7D-%24%7Bc.end%7D%60).join(%22%2C%22)%3Bprompt(%22Copy%20your%20link%3A%22%2C%60%24%7BB%7D%3Fv%3D%24%7Bd%7D%26clips%3D%24%7BcS%7D%60)%3B%7D%3BbC.onclick%3D()%3D%3E%7Bdocument.body.removeChild(u)%3Blet%20D%3Ddocument.getElementById(%27yt-clipper-dash%27)%3Bif(D)document.body.removeChild(D)%3B%7D%3BbD.onclick%3D()%3D%3E%7Bif(document.getElementById(%27yt-clipper-dash%27))return%3Blet%20D%3Dmk(%22div%22%2C%22yt-clipper-dash%22%2C%22position%3Afixed%3Btop%3A5%25%3Bleft%3A50%25%3Btransform%3AtranslateX(-50%25)%3Bwidth%3A90%25%3Bmax-width%3A800px%3Bheight%3A90%25%3Bbackground%3A%23111%3Bcolor%3Awhite%3Bz-index%3A999999%3Bborder-radius%3A12px%3Bpadding%3A20px%3Bbox-sizing%3Aborder-box%3Bfont-family%3Asans-serif%3Bbox-shadow%3A0%2010px%2050px%20rgba(0%2C0%2C0%2C0.9)%3Bdisplay%3Aflex%3Bflex-direction%3Acolumn%3Bborder%3A1px%20solid%20%23444%3B%22)%3Blet%20H%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bborder-bottom%3A1px%20solid%20%23333%3Bpadding-bottom%3A15px%3Bmargin-bottom%3A15px%3B%22)%3BH.appendChild(mk(%22h2%22%2C%22%22%2C%22margin%3A0%3B%22%2C%22%F0%9F%93%9A%20Clip%20Dashboard%22))%3Blet%20cD%3Dmk(%22button%22%2C%22%22%2C%22background%3Anone%3Bcolor%3A%23aaa%3Bborder%3Anone%3Bfont-size%3A28px%3Bcursor%3Apointer%3B%22%2C%22%C3%97%22)%3BcD.onclick%3D()%3D%3Edocument.body.removeChild(D)%3BH.appendChild(cD)%3BD.appendChild(H)%3Blet%20T%3Dmk(%22div%22%2C%22%22%2C%22margin-bottom%3A15px%3Bdisplay%3Aflex%3Bgap%3A10px%3B%22)%3Blet%20bEx%3Dmk(%22button%22%2C%22%22%2C%22padding%3A8px%2015px%3Bbackground%3A%23065fd4%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22%E2%AC%87%EF%B8%8F%20Export%20JSON%22)%3Blet%20bIm%3Dmk(%22button%22%2C%22%22%2C%22padding%3A8px%2015px%3Bbackground%3A%23107c10%3Bcolor%3Awhite%3Bborder%3Anone%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bfont-weight%3Abold%3B%22%2C%22%E2%AC%86%EF%B8%8F%20Import%20JSON%22)%3BT.appendChild(bEx)%3BT.appendChild(bIm)%3BD.appendChild(T)%3Blet%20L%3Dmk(%22div%22%2C%22%22%2C%22flex%3A1%3Boverflow-y%3Aauto%3Bbackground%3A%231a1a1a%3Bborder-radius%3A8px%3Bpadding%3A15px%3B%22)%3BD.appendChild(L)%3Bconst%20rL%3D()%3D%3E%7BL.textContent%3D%22%22%3Blet%20lib%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Blet%20K%3DObject.keys(lib)%3Bif(K.length%3D%3D%3D0)%7BL.appendChild(mk(%22div%22%2C%22%22%2C%22padding%3A30px%3Btext-align%3Acenter%3Bcolor%3A%23666%3B%22%2C%22No%20saved%20clips%20yet.%22))%3Breturn%3B%7DK.forEach(v%3D%3E%7Blet%20V%3Dlib%5Bv%5D%3Bif(V.clips)%7BV.montages%3D%7B%22Default%22%3AV.clips%7D%3Bdelete%20V.clips%3Blib%5Bv%5D%3DV%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(lib))%3B%7Dif(!V.montages)return%3Blet%20hasClips%3Dfalse%3BObject.keys(V.montages).forEach(mN%3D%3E%7Bif(V.montages%5BmN%5D%26%26V.montages%5BmN%5D.length%3E0)hasClips%3Dtrue%3B%7D)%3Bif(!hasClips)return%3Blet%20C%3Dmk(%22div%22%2C%22%22%2C%22background%3A%232a2a2a%3Bmargin-bottom%3A15px%3Bpadding%3A15px%3Bborder-radius%3A8px%3Bborder%3A1px%20solid%20%23333%3B%22)%3BC.appendChild(mk(%22div%22%2C%22%22%2C%22font-weight%3Abold%3Bfont-size%3A16px%3Bmargin-bottom%3A10px%3B%22%2CV.title%7C%7C%60Video%20ID%3A%20%24%7Bv%7D%60))%3BObject.keys(V.montages).forEach(mName%3D%3E%7Blet%20mClips%3DV.montages%5BmName%5D%3Bif(!mClips%7C%7CmClips.length%3D%3D%3D0)return%3Blet%20mRow%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bjustify-content%3Aspace-between%3Balign-items%3Acenter%3Bbackground%3A%23111%3Bpadding%3A10px%3Bborder-radius%3A6px%3Bmargin-bottom%3A5px%3B%22)%3Blet%20iCol%3Dmk(%22div%22%2C%22%22%2C%22flex%3A1%3B%22)%3BiCol.appendChild(mk(%22div%22%2C%22%22%2C%22font-weight%3Abold%3Bfont-size%3A14px%3Bcolor%3A%233ea6ff%3B%22%2CmName))%3BiCol.appendChild(mk(%22div%22%2C%22%22%2C%22color%3A%23aaa%3Bfont-size%3A12px%3B%22%2C%60%24%7BmClips.length%7D%20clip(s)%60))%3Blet%20aCol%3Dmk(%22div%22%2C%22%22%2C%22display%3Aflex%3Bgap%3A10px%3Balign-items%3Acenter%3B%22)%3Blet%20P%3Dmk(%22a%22%2C%22%22%2C%22padding%3A6px%2012px%3Bbackground%3A%23fff%3Bcolor%3A%23000%3Btext-decoration%3Anone%3Bborder-radius%3A20px%3Bfont-weight%3Abold%3Bfont-size%3A12px%3Bwhite-space%3Anowrap%3B%22%2C%22%E2%96%B6%20Play%22)%3BP.href%3D%60%24%7BB%7D%3Fv%3D%24%7Bv%7D%26clips%3D%24%7BmClips.map(c%3D%3E%60%24%7Bc.start%7D-%24%7Bc.end%7D%60).join(%22%2C%22)%7D%60%3BP.target%3D%22_blank%22%3Blet%20dM%3Dmk(%22button%22%2C%22%22%2C%22padding%3A6px%2010px%3Bbackground%3Atransparent%3Bcolor%3A%23cc0000%3Bborder%3A1px%20solid%20%23cc0000%3Bborder-radius%3A4px%3Bcursor%3Apointer%3Bwhite-space%3Anowrap%3Bfont-size%3A12px%3B%22%2C%22Delete%22)%3BdM.onclick%3D()%3D%3E%7Bif(confirm(%60Delete%20montage%20%27%24%7BmName%7D%27%3F%60))%7Blet%20ll%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3Bdelete%20ll%5Bv%5D.montages%5BmName%5D%3Bif(Object.keys(ll%5Bv%5D.montages).length%3D%3D%3D0)delete%20ll%5Bv%5D%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(ll))%3BrL()%3Brdr()%3B%7D%7D%3BaCol.appendChild(P)%3BaCol.appendChild(dM)%3BmRow.appendChild(iCol)%3BmRow.appendChild(aCol)%3BC.appendChild(mRow)%3B%7D)%3BL.appendChild(C)%3B%7D)%3B%7D%3BbEx.onclick%3D()%3D%3E%7Blet%20a%3Ddocument.createElement(%22a%22)%3Ba.href%3D%22data%3Atext%2Fjson%3Bcharset%3Dutf-8%2C%22%2BencodeURIComponent(JSON.stringify(JSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%2Cnull%2C2))%3Ba.download%3D%22yt-clipper-backup.json%22%3Ba.click()%3B%7D%3BbIm.onclick%3D()%3D%3E%7Blet%20i%3Ddocument.createElement(%22input%22)%3Bi.type%3D%22file%22%3Bi.accept%3D%22.json%22%3Bi.onchange%3De%3D%3E%7Blet%20f%3De.target.files%5B0%5D%3Bif(!f)return%3Blet%20r%3Dnew%20FileReader()%3Br.onload%3Dev%3D%3E%7Btry%7Blet%20M%3DJSON.parse(ev.target.result)%3Blet%20cl%3DJSON.parse(localStorage.getItem(%27yt-clipper-library%27)%7C%7C%27%7B%7D%27)%3BlocalStorage.setItem(%27yt-clipper-library%27%2CJSON.stringify(%7B...cl%2C...M%7D))%3BrL()%3Brdr()%3Balert(%22Import%20successful!%22)%3B%7Dcatch(e)%7Balert(%22Invalid%20JSON%20file.%22)%3B%7D%7D%3Br.readAsText(f)%3B%7D%3Bi.click()%3B%7D%3BrL()%3Bdocument.body.appendChild(D)%3B%7D%3Brdr()%3B%7D)();">
+
+        <a class="bookmarklet-btn" title="YT Clipper" id="bookmarklet-link" href="#">
             YT Clipper
         </a>
+
         <div class="help-text">
-            <p>Don't see your bookmarks bar? Try <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span> (Windows) or <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span> (Mac).</p>
+            <p>
+                Don't see your bookmarks bar?
+                Try <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span>
+                on Windows or
+                <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span>
+                on Mac.
+            </p>
+        </div>
+
+        <div class="github-link">
+            <a href="https://github.com/bindzume/yt-clipper-bookmarklet" target="_blank">
+                View Source on GitHub
+            </a>
         </div>
     </div>
 
+    <script type="text/plain" id="bookmarklet-source">
+(function(){
+if(document.getElementById('yt-clipper-ui'))return;
+
+for(let i=0;i<localStorage.length;i++){
+    let k=localStorage.key(i);
+    if(k&&k.startsWith('yt-clips-')){
+        let v=k.replace('yt-clips-','');
+        let c=JSON.parse(localStorage.getItem(k));
+        let l=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+        if(!l[v]){
+            l[v]={title:'Video '+v,montages:{'Default':c}};
+            localStorage.setItem('yt-clipper-library',JSON.stringify(l));
+        }
+        localStorage.removeItem(k);
+    }
+}
+
+const B='https://bindzume.github.io/yt-clipper-bookmarklet/';
+let t=null,n=null;
+const d=new URLSearchParams(window.location.search).get('v');
+const vEl=document.querySelector('video');
+let actM='Default';
+
+const mk=(t,i,c,x)=>{
+    let e=document.createElement(t);
+    if(i)e.id=i;
+    if(c)e.style.cssText=c;
+    if(x)e.textContent=x;
+    return e;
+};
+
+const fT=s=>{
+    if(s===null)return'--';
+    let m=Math.floor(s/60);
+    let S=Math.floor(s%60).toString().padStart(2,'0');
+    return `${m}:${S}`;
+};
+
+const safeFileName=name=>{
+    return String(name||'Montage')
+        .trim()
+        .replace(/[^a-z0-9_-]+/gi,'_')
+        .replace(/^_+|_+$/g,'')||'Montage';
+};
+const showCmdModal=(cmd)=>{
+    let old=document.getElementById('yt-dlp-modal');
+    if(old)old.remove();
+
+    let modal=mk('div','yt-dlp-modal','position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;');
+    let box=mk('div','','width:90%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.8);');
+
+    box.appendChild(mk('h2','','margin-top:0;','Export yt-dlp Command'));
+    box.appendChild(mk('p','','color:#aaa;','Copy this command, or open Google Colab to run it.'));
+
+    let ta=mk('textarea','','width:100%;height:260px;background:#000;color:#0f0;border:1px solid #333;border-radius:8px;padding:12px;box-sizing:border-box;font-family:monospace;font-size:13px;resize:vertical;white-space:pre;');
+    ta.value=cmd;
+    ta.readOnly=true;
+
+    let buttons=mk('div','','display:flex;justify-content:flex-end;gap:10px;margin-top:15px;flex-wrap:wrap;');
+
+    let copy=mk('button','','background:#065fd4;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Copy Command');
+    copy.onclick=async()=>{
+        try{
+            await navigator.clipboard.writeText(cmd);
+            copy.textContent='Copied!';
+            setTimeout(()=>copy.textContent='Copy Command',1200);
+        }catch(e){
+            ta.focus();
+            ta.select();
+            document.execCommand('copy');
+            copy.textContent='Copied!';
+            setTimeout(()=>copy.textContent='Copy Command',1200);
+        }
+    };
+
+    let colab=mk('button','','background:#107c10;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Go to Colab');
+    colab.onclick=()=>{
+        window.open('https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb','_blank');
+        modal.remove();
+    };
+
+    let cancel=mk('button','','background:#333;color:white;border:1px solid #555;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Cancel');
+    cancel.onclick=()=>modal.remove();
+
+    buttons.appendChild(copy);
+    buttons.appendChild(colab);
+    buttons.appendChild(cancel);
+
+    box.appendChild(ta);
+    box.appendChild(buttons);
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+
+    ta.focus();
+    ta.select();
+};
+
+
+const buildCmd=(clips,mName,vid)=>{
+    let out=`YT_${safeFileName(mName)}_${vid}.mp4`;
+
+    let sectionLines=clips
+        .map(c=>`  --download-sections "*${c.start}-${c.end}" \\`)
+        .join('\n');
+
+    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
+${sectionLines}
+  --force-keyframes-at-cuts \\
+  "https://www.youtube.com/watch?v=${vid}" \\
+  -o "part_%(autonumber)02d.%(ext)s" \\
+  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
+  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${out}" \\
+  && rm part_*.mp4 inputs.txt`;
+};
+
+const gD=()=>{
+    let l=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+    let vD=l[d];
+
+    if(vD&&vD.clips){
+        vD.montages={'Default':vD.clips};
+        delete vD.clips;
+        l[d]=vD;
+        localStorage.setItem('yt-clipper-library',JSON.stringify(l));
+    }
+
+    if(!vD){
+        vD={
+            title:document.title.replace(' - YouTube',''),
+            montages:{'Default':[]}
+        };
+    }
+
+    if(!vD.montages)vD.montages={'Default':[]};
+
+    if(!vD.montages[actM]){
+        let keys=Object.keys(vD.montages);
+        actM=keys.length?keys[0]:'Default';
+    }
+
+    if(!vD.montages[actM])vD.montages[actM]=[];
+
+    return{l,vD};
+};
+
+const sD=(l,vD)=>{
+    l[d]=vD;
+    localStorage.setItem('yt-clipper-library',JSON.stringify(l));
+};
+
+const u=mk(
+    'div',
+    'yt-clipper-ui',
+    'position:fixed;top:60px;right:20px;background:rgba(0,0,0,0.95);color:white;padding:15px;z-index:999999;border-radius:8px;font-family:sans-serif;width:260px;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid #333;'
+);
+
+u.appendChild(mk('h3','','margin-top:0;border-bottom:1px solid #555;padding-bottom:5px;','✂️ YT Clipper'));
+
+const mRow=mk('div','','display:flex;gap:5px;margin-bottom:10px;align-items:center;');
+const mSel=mk('select','','flex:1;background:#222;color:white;border:1px solid #444;padding:4px;border-radius:4px;');
+const mAdd=mk('button','','background:#065fd4;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;','+');
+
+mRow.appendChild(mSel);
+mRow.appendChild(mAdd);
+u.appendChild(mRow);
+
+const bS=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark Start');
+const bE=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark End');
+const sT=mk('div','','margin-bottom:10px;font-size:12px;color:#ccc;text-align:center;','Start: -- | End: --');
+const bV=mk('button','','width:100%;margin-bottom:10px;padding:8px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','Save Clip');
+
+u.appendChild(bS);
+u.appendChild(bE);
+u.appendChild(sT);
+u.appendChild(bV);
+
+u.appendChild(mk('h4','','margin:0 0 5px 0;font-size:13px;color:#aaa;','Clips in Montage'));
+
+const cL=mk('div','','font-size:12px;max-height:120px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
+u.appendChild(cL);
+
+const bSh=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;','Generate Share Link');
+const bYt=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;','Export yt-dlp Cmd');
+const bD=mk('button','','width:100%;margin-bottom:10px;padding:6px;background:#673ab7;color:white;border:none;border-radius:4px;cursor:pointer;','Open Dashboard');
+const bC=mk('button','','width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;','Close');
+
+u.appendChild(bSh);
+u.appendChild(bYt);
+u.appendChild(bD);
+u.appendChild(bC);
+document.body.appendChild(u);
+
+const rdr=()=>{
+    if(!d){
+        cL.textContent='';
+        cL.appendChild(mk('span','','color:#ff5555','Not a video page.'));
+        return;
+    }
+
+    let{l,vD}=gD();
+    mSel.textContent='';
+
+    Object.keys(vD.montages).forEach(k=>{
+        let opt=mk('option','','',k);
+        opt.value=k;
+        if(k===actM)opt.selected=true;
+        mSel.appendChild(opt);
+    });
+
+    cL.textContent='';
+    let clips=vD.montages[actM];
+
+    if(!clips||clips.length===0){
+        cL.appendChild(mk('i','','','No clips yet.'));
+    }else{
+        clips.forEach((c,i)=>{
+            let r=mk('div','','display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;');
+            let txt=mk('span','','flex:1;',`${i+1}. ${fT(c.start)}-${fT(c.end)}`);
+            let btnGrp=mk('div','','display:flex;gap:2px;');
+
+            let btnUp=mk('button','','background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','↑');
+            let btnDn=mk('button','','background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','↓');
+            let btnDel=mk('button','','background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','X');
+
+            btnUp.onclick=()=>{
+                if(i>0){
+                    let tmp=clips[i];
+                    clips[i]=clips[i-1];
+                    clips[i-1]=tmp;
+                    sD(l,vD);
+                    rdr();
+                }
+            };
+
+            btnDn.onclick=()=>{
+                if(i<clips.length-1){
+                    let tmp=clips[i];
+                    clips[i]=clips[i+1];
+                    clips[i+1]=tmp;
+                    sD(l,vD);
+                    rdr();
+                }
+            };
+
+            btnDel.onclick=()=>{
+                if(confirm('Remove clip?')){
+                    clips.splice(i,1);
+                    sD(l,vD);
+                    rdr();
+                }
+            };
+
+            btnGrp.appendChild(btnUp);
+            btnGrp.appendChild(btnDn);
+            btnGrp.appendChild(btnDel);
+            r.appendChild(txt);
+            r.appendChild(btnGrp);
+            cL.appendChild(r);
+        });
+    }
+};
+
+const uS=()=>{
+    sT.textContent=`Start: ${fT(t)} | End: ${fT(n)}`;
+};
+
+mSel.onchange=e=>{
+    actM=e.target.value;
+    rdr();
+};
+
+mAdd.onclick=()=>{
+    let nm=prompt('New Montage Name:');
+    if(nm&&nm.trim()){
+        let{l,vD}=gD();
+        if(!vD.montages[nm]){
+            vD.montages[nm]=[];
+            actM=nm;
+            sD(l,vD);
+            rdr();
+        }
+    }
+};
+
+bS.onclick=()=>{
+    if(vEl){
+        t=vEl.currentTime;
+        uS();
+    }
+};
+
+bE.onclick=()=>{
+    if(vEl){
+        n=vEl.currentTime;
+        uS();
+    }
+};
+
+bV.onclick=()=>{
+    if(t!==null&&n!==null&&n>t&&d){
+        let{l,vD}=gD();
+        vD.montages[actM].push({
+            start:Math.round(t*10)/10,
+            end:Math.round(n*10)/10
+        });
+        sD(l,vD);
+        t=null;
+        n=null;
+        uS();
+        rdr();
+    }else{
+        alert('Valid start/end time required.');
+    }
+};
+
+bSh.onclick=()=>{
+    let{vD}=gD();
+    let clips=vD.montages[actM];
+
+    if(!clips||clips.length===0)return alert('No clips in this montage.');
+
+    let cS=clips.map(c=>`${c.start}-${c.end}`).join(',');
+    prompt('Copy your link:',`${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${cS}`);
+};
+
+bYt.onclick=()=>{
+    let{vD}=gD();
+    let clips=vD.montages[actM];
+
+    if(!clips||clips.length===0)return alert('No clips to export.');
+
+    showCmdModal(buildCmd(clips,actM,d));
+};
+
+bC.onclick=()=>{
+    document.body.removeChild(u);
+    let D=document.getElementById('yt-clipper-dash');
+    if(D)document.body.removeChild(D);
+};
+
+bD.onclick=()=>{
+    if(document.getElementById('yt-clipper-dash'))return;
+
+    let D=mk(
+        'div',
+        'yt-clipper-dash',
+        'position:fixed;top:5%;left:50%;transform:translateX(-50%);width:90%;max-width:800px;height:90%;background:#111;color:white;z-index:999999;border-radius:12px;padding:20px;box-sizing:border-box;font-family:sans-serif;box-shadow:0 10px 50px rgba(0,0,0,0.9);display:flex;flex-direction:column;border:1px solid #444;'
+    );
+
+    let H=mk('div','','display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;padding-bottom:15px;margin-bottom:15px;');
+    H.appendChild(mk('h2','','margin:0;','📚 Clip Dashboard'));
+
+    let cD=mk('button','','background:none;color:#aaa;border:none;font-size:28px;cursor:pointer;','×');
+    cD.onclick=()=>document.body.removeChild(D);
+
+    H.appendChild(cD);
+    D.appendChild(H);
+
+    let T=mk('div','','margin-bottom:15px;display:flex;gap:10px;');
+    let bEx=mk('button','','padding:8px 15px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','⬇️ Export JSON');
+    let bIm=mk('button','','padding:8px 15px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','⬆️ Import JSON');
+
+    T.appendChild(bEx);
+    T.appendChild(bIm);
+    D.appendChild(T);
+
+    let L=mk('div','','flex:1;overflow-y:auto;background:#1a1a1a;border-radius:8px;padding:15px;');
+    D.appendChild(L);
+
+    const rL=()=>{
+        L.textContent='';
+        let lib=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+        let K=Object.keys(lib);
+
+        if(K.length===0){
+            L.appendChild(mk('div','','padding:30px;text-align:center;color:#666;','No saved clips yet.'));
+            return;
+        }
+
+        K.forEach(v=>{
+            let V=lib[v];
+
+            if(V.clips){
+                V.montages={'Default':V.clips};
+                delete V.clips;
+                lib[v]=V;
+                localStorage.setItem('yt-clipper-library',JSON.stringify(lib));
+            }
+
+            if(!V.montages)return;
+
+            let hasClips=false;
+            Object.keys(V.montages).forEach(mN=>{
+                if(V.montages[mN]&&V.montages[mN].length>0)hasClips=true;
+            });
+
+            if(!hasClips)return;
+
+            let C=mk('div','','background:#2a2a2a;margin-bottom:15px;padding:15px;border-radius:8px;border:1px solid #333;');
+            C.appendChild(mk('div','','font-weight:bold;font-size:16px;margin-bottom:10px;',V.title||`Video ID: ${v}`));
+
+            Object.keys(V.montages).forEach(mName=>{
+                let mClips=V.montages[mName];
+                if(!mClips||mClips.length===0)return;
+
+                let mRow=mk('div','','display:flex;justify-content:space-between;align-items:center;background:#111;padding:10px;border-radius:6px;margin-bottom:5px;');
+                let iCol=mk('div','','flex:1;');
+
+                iCol.appendChild(mk('div','','font-weight:bold;font-size:14px;color:#3ea6ff;',mName));
+                iCol.appendChild(mk('div','','color:#aaa;font-size:12px;',`${mClips.length} clip(s)`));
+
+                let aCol=mk('div','','display:flex;gap:10px;align-items:center;');
+
+                let P=mk('a','','padding:6px 12px;background:#fff;color:#000;text-decoration:none;border-radius:20px;font-weight:bold;font-size:12px;white-space:nowrap;','▶ Play');
+                P.href=`${B}?v=${v}&m=${encodeURIComponent(mName)}&clips=${mClips.map(c=>`${c.start}-${c.end}`).join(',')}`;
+                P.target='_blank';
+
+                let eM=mk('button','','padding:6px 10px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;','Export');
+                eM.onclick=()=>prompt('Copy this command:',buildCmd(mClips,mName,v));
+
+                let dM=mk('button','','padding:6px 10px;background:transparent;color:#cc0000;border:1px solid #cc0000;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;','Delete');
+                dM.onclick=()=>{
+                    if(confirm(`Delete montage '${mName}'?`)){
+                        let ll=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+                        delete ll[v].montages[mName];
+                        if(Object.keys(ll[v].montages).length===0)delete ll[v];
+                        localStorage.setItem('yt-clipper-library',JSON.stringify(ll));
+                        rL();
+                        rdr();
+                    }
+                };
+
+                aCol.appendChild(P);
+                aCol.appendChild(eM);
+                aCol.appendChild(dM);
+
+                mRow.appendChild(iCol);
+                mRow.appendChild(aCol);
+                C.appendChild(mRow);
+            });
+
+            L.appendChild(C);
+        });
+    };
+
+    bEx.onclick=()=>{
+        let a=document.createElement('a');
+        a.href='data:text/json;charset=utf-8,'+encodeURIComponent(
+            JSON.stringify(JSON.parse(localStorage.getItem('yt-clipper-library')||'{}'),null,2)
+        );
+        a.download='yt-clipper-backup.json';
+        a.click();
+    };
+
+    bIm.onclick=()=>{
+        let i=document.createElement('input');
+        i.type='file';
+        i.accept='.json';
+
+        i.onchange=e=>{
+            let f=e.target.files[0];
+            if(!f)return;
+
+            let r=new FileReader();
+
+            r.onload=ev=>{
+                try{
+                    let M=JSON.parse(ev.target.result);
+                    let cl=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+                    localStorage.setItem('yt-clipper-library',JSON.stringify({...cl,...M}));
+                    rL();
+                    rdr();
+                    alert('Import successful!');
+                }catch(e){
+                    alert('Invalid JSON file.');
+                }
+            };
+
+            r.readAsText(f);
+        };
+
+        i.click();
+    };
+
+    rL();
+    document.body.appendChild(D);
+};
+
+rdr();
+})();
+    </script>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
+
         const videoId = urlParams.get('v');
-        const clipsParam = urlParams.get('clips'); 
-        
+        const clipsParam = urlParams.get('clips');
+        const montageNameParam = urlParams.get('m') || 'Montage';
+
+        const bookmarkletSource = document.getElementById('bookmarklet-source').textContent.trim();
+        document.getElementById('bookmarklet-link').href = 'javascript:' + encodeURIComponent(bookmarkletSource);
+
         const formatTime = (seconds) => {
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60).toString().padStart(2, '0');
             return `${m}:${s}`;
         };
 
+        const safeFileName = (name) => {
+            return String(name || 'Montage')
+                .trim()
+                .replace(/[^a-z0-9_-]+/gi, '_')
+                .replace(/^_+|_+$/g, '') || 'Montage';
+        };
+
         let clips = [];
         let currentClipIndex = 0;
         let player;
         let timeChecker;
-        const statusText = document.getElementById('status');
+
+        const statusText = document.getElementById('status-text');
+
+        function buildYtDlpCommand() {
+            if (!videoId || clips.length === 0) return '';
+
+            const safeMontageName = safeFileName(montageNameParam);
+            const outputFile = `YT_${safeMontageName}_${videoId}.mp4`;
+
+            const sectionLines = clips
+                .map(c => `  --download-sections "*${c.start}-${c.end}" \\`)
+                .join('\n');
+
+            return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
+${sectionLines}
+  --force-keyframes-at-cuts \\
+  "https://www.youtube.com/watch?v=${videoId}" \\
+  -o "part_%(autonumber)02d.%(ext)s" \\
+  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
+  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${outputFile}" \\
+  && rm part_*.mp4 inputs.txt`;
+        }
+		function showYtDlpModal(cmd) {
+    const existing = document.getElementById('yt-dlp-modal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'yt-dlp-modal';
+    modal.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.75);
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: sans-serif;
+    `;
+
+    const box = document.createElement('div');
+    box.style.cssText = `
+        width: 90%;
+        max-width: 760px;
+        background: #111;
+        color: white;
+        border: 1px solid #444;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    `;
+
+    const title = document.createElement('h2');
+    title.textContent = 'Export yt-dlp Command';
+    title.style.marginTop = '0';
+
+    const desc = document.createElement('p');
+    desc.textContent = 'Copy this command, or open Google Colab to run it.';
+    desc.style.color = '#aaa';
+
+    const textarea = document.createElement('textarea');
+    textarea.value = cmd;
+    textarea.readOnly = true;
+    textarea.style.cssText = `
+        width: 100%;
+        height: 260px;
+        background: #000;
+        color: #0f0;
+        border: 1px solid #333;
+        border-radius: 8px;
+        padding: 12px;
+        box-sizing: border-box;
+        font-family: monospace;
+        font-size: 13px;
+        resize: vertical;
+        white-space: pre;
+    `;
+
+    const buttons = document.createElement('div');
+    buttons.style.cssText = `
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    `;
+
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy Command';
+    copyBtn.style.cssText = `
+        background: #065fd4;
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    `;
+
+    copyBtn.onclick = async () => {
+        try {
+            await navigator.clipboard.writeText(cmd);
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
+        } catch (e) {
+            textarea.focus();
+            textarea.select();
+            document.execCommand('copy');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
+        }
+    };
+
+    const colabBtn = document.createElement('button');
+    colabBtn.textContent = 'Go to Colab';
+    colabBtn.style.cssText = `
+        background: #107c10;
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    `;
+
+    colabBtn.onclick = () => {
+        window.open(
+            'https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb',
+            '_blank'
+        );
+        modal.remove();
+    };
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = `
+        background: #333;
+        color: white;
+        border: 1px solid #555;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    `;
+
+    cancelBtn.onclick = () => modal.remove();
+
+    buttons.appendChild(copyBtn);
+    buttons.appendChild(colabBtn);
+    buttons.appendChild(cancelBtn);
+
+    box.appendChild(title);
+    box.appendChild(desc);
+    box.appendChild(textarea);
+    box.appendChild(buttons);
+
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+
+    textarea.focus();
+    textarea.select();
+}
+
+        function generateYtDlpCommand() {
+    const cmd = buildYtDlpCommand();
+    if (!cmd) return;
+
+    showYtDlpModal(cmd);
+}
+
+        document.getElementById('export-btn-player').onclick = generateYtDlpCommand;
+        document.getElementById('export-btn-fallback').onclick = generateYtDlpCommand;
 
         function loadYouTubeAPI() {
             if (clipsParam) {
                 clips = clipsParam.split(',').map(clip => {
                     const parts = clip.split('-');
-                    return { start: parseFloat(parts[0]), end: parseFloat(parts[1]) };
-                });
+                    return {
+                        start: parseFloat(parts[0]),
+                        end: parseFloat(parts[1])
+                    };
+                }).filter(c => !Number.isNaN(c.start) && !Number.isNaN(c.end) && c.end > c.start);
             }
+
             const tag = document.createElement('script');
             tag.src = "https://www.youtube.com/iframe_api";
+
             const firstScriptTag = document.getElementsByTagName('script')[0];
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         }
@@ -88,22 +936,23 @@
                 statusText.innerText = "Error: Missing clips in URL.";
                 return;
             }
+
             player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
                 videoId: videoId,
-                playerVars: { 
-                    'playsinline': 1, 
-                    'start': Math.floor(clips[0].start), 
+                playerVars: {
+                    'playsinline': 1,
+                    'start': Math.floor(clips[0].start),
                     'autoplay': 1,
-                    'controls': 1 
+                    'controls': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onError': onPlayerError 
+                    'onError': onPlayerError
                 }
             });
-        }
+        };
 
         function onPlayerReady(event) {
             statusText.innerText = `Playing clip 1 of ${clips.length}`;
@@ -114,37 +963,41 @@
         function onPlayerError(event) {
             if (event.data === 101 || event.data === 150) {
                 document.getElementById('player-container').style.display = 'none';
-                document.getElementById('status').style.display = 'none';
+                document.getElementById('status-bar').style.display = 'none';
                 document.getElementById('fallback-page').style.display = 'flex';
-                
+
                 const container = document.getElementById('fallback-links-container');
+                container.textContent = '';
+
                 clips.forEach((clip, index) => {
                     const link = document.createElement('a');
                     link.className = 'fallback-link';
-                    link.target = '_blank'; 
+                    link.target = '_blank';
                     link.href = `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(clip.start)}s`;
                     link.innerText = `▶ Play Clip ${index + 1} (${formatTime(clip.start)} - ${formatTime(clip.end)})`;
                     container.appendChild(link);
                 });
             } else {
-                statusText.innerText = `An error occurred playing this video. (Code: ${event.data})`;
+                statusText.innerText = `An error occurred playing this video. Code: ${event.data}`;
             }
         }
 
         function checkTime() {
             if (!player || !player.getCurrentTime || clips.length === 0) return;
+
             const currentTime = player.getCurrentTime();
             const currentClip = clips[currentClipIndex];
 
             if (currentTime >= currentClip.end) {
                 currentClipIndex++;
+
                 if (currentClipIndex < clips.length) {
                     player.seekTo(clips[currentClipIndex].start);
                     statusText.innerText = `Playing clip ${currentClipIndex + 1} of ${clips.length}`;
                 } else {
                     player.pauseVideo();
                     statusText.innerText = "All clips finished!";
-                    clearInterval(timeChecker); 
+                    clearInterval(timeChecker);
                 }
             }
         }
@@ -153,7 +1006,7 @@
             document.getElementById('install-page').style.display = 'flex';
         } else {
             document.getElementById('player-container').style.display = 'block';
-            document.getElementById('status').style.display = 'block';
+            document.getElementById('status-bar').style.display = 'flex';
             loadYouTubeAPI();
         }
     </script>
