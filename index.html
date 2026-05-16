@@ -1,564 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YT Clipper</title>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   YT Clipper
+  </title>
+  <style>
+   body {
+    margin:0;
+    padding:0;
+    background:#0f0f0f;
+    color:white;
+    font-family:"YouTube Sans", Roboto, Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+    overflow-x:hidden
+}
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #0f0f0f;
-            color: white;
-            font-family: "YouTube Sans", Roboto, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+#install-page {
+    display:none;
+    flex:1;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    text-align:center;
+    padding:40px 20px;
+    box-sizing:border-box;
+    overflow-y:auto
+}
 
-        #install-page {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: center;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
+#install-page h1 {
+    font-size:48px;
+    margin:0 0 10px
+}
 
-        #install-page h1 {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
+#install-page p.subtitle {
+    font-size:18px;
+    color:#aaa;
+    max-width:680px;
+    margin:0 0 35px
+}
 
-        #install-page p.subtitle {
-            font-size: 18px;
-            color: #aaa;
-            max-width: 560px;
-            margin-bottom: 35px;
-        }
+.drag-instruction {
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:15px
+}
 
-        .drag-instruction {
-            font-size: 20px;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 15px;
-        }
+.bookmarklet-btn {
+    display:inline-block;
+    background:#065fd4;
+    color:white;
+    padding:18px 35px;
+    text-decoration:none;
+    border-radius:50px;
+    font-weight:bold;
+    font-size:20px;
+    box-shadow:0 4px 15px rgba(6, 95, 212, .4);
+    cursor:grab;
+    border:3px dashed rgba(255, 255, 255, .5)
+}
 
-        .bookmarklet-btn {
-            display: inline-block;
-            background-color: #065fd4;
-            color: white;
-            padding: 18px 35px;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 20px;
-            box-shadow: 0 4px 15px rgba(6, 95, 212, 0.4);
-            transition: transform 0.1s, box-shadow 0.2s;
-            cursor: grab;
-            border: 3px dashed rgba(255,255,255,0.5);
-        }
+.bookmarklet-btn:hover {
+    background:#1a73e8
+}
 
-        .bookmarklet-btn:hover {
-            background-color: #1a73e8;
-            box-shadow: 0 6px 20px rgba(6, 95, 212, 0.6);
-        }
+.bookmarklet-btn:active {
+    transform:scale(.98);
+    cursor:grabbing
+}
 
-        .bookmarklet-btn:active {
-            transform: scale(0.98);
-            cursor: grabbing;
-        }
+.help-text {
+    margin-top:35px;
+    font-size:14px!important;
+    color:#777!important;
+    border-top:1px solid #2a2a2a;
+    padding-top:20px;
+    max-width:760px
+}
 
-        .help-text {
-            margin-top: 35px;
-            font-size: 14px !important;
-            color: #606060 !important;
-            border-top: 1px solid #2a2a2a;
-            padding-top: 20px;
-            max-width: 760px;
-        }
+.kbd {
+    background:#2a2a2a;
+    border-radius:3px;
+    border:1px solid #444;
+    color:#eee;
+    padding:1px 5px;
+    font-family:monospace
+}
 
-        .kbd {
-            background-color: #2a2a2a;
-            border-radius: 3px;
-            border: 1px solid #444;
-            color: #eee;
-            padding: 1px 5px;
-            font-family: monospace;
-        }
+.github-link {
+    margin-top:25px;
+    font-size:14px
+}
 
-        .github-link {
-            margin-top: 25px;
-            font-size: 14px;
-        }
+.github-link a {
+    color:#888;
+    text-decoration:none
+}
 
-        .github-link a {
-            color: #888;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
+.github-link a:hover {
+    color:#fff;
+    text-decoration:underline
+}
 
-        .github-link a:hover {
-            color: #fff;
-            text-decoration: underline;
-        }
+#player-container {
+    display:none;
+    width:100%;
+    flex:1;
+    background:black;
+    min-height:0
+}
 
-        #player-container {
-            display: none;
-            width: 100%;
-            flex: 1;
-            background: black;
-            min-height: 0;
-        }
+#player {
+    width:100%;
+    height:100%
+}
 
-        #player {
-            width: 100%;
-            height: 100%;
-        }
+#status-bar {
+    display:none;
+    width:100%;
+    background:#111;
+    color:#aaa;
+    padding:10px 20px;
+    font-size:16px;
+    border-top:1px solid #222;
+    z-index:100;
+    box-sizing:border-box;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px
+}
 
-        #status-bar {
-            display: none;
-            width: 100%;
-            background: #111;
-            color: #aaa;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-top: 1px solid #222;
-            z-index: 100;
-            box-sizing: border-box;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
+.export-btn {
+    background:#107c10;
+    color:white;
+    border:none;
+    padding:8px 16px;
+    border-radius:4px;
+    font-weight:bold;
+    cursor:pointer;
+    white-space:nowrap
+}
 
-        .export-btn {
-            background: #107c10;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            white-space: nowrap;
-        }
+.export-btn:hover {
+    background:#0c5e0c
+}
 
-        .export-btn:hover {
-            background: #0c5e0c;
-        }
+.home-btn {
+    background:#333;
+    color:white;
+    border:1px solid #555;
+    padding:8px 16px;
+    border-radius:4px;
+    font-weight:bold;
+    cursor:pointer;
+    white-space:nowrap
+}
 
-        #fallback-page {
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            overflow-y: auto;
-        }
+.home-btn:hover {
+    background:#444
+}
 
-        .fallback-link {
-            display: block;
-            background: #222;
-            color: #3ea6ff;
-            text-decoration: none;
-            padding: 15px 25px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            font-size: 18px;
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid #444;
-            transition: background 0.2s;
-            box-sizing: border-box;
-        }
+.status-actions {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap
+}
 
-        .fallback-link:hover {
-            background: #333;
-        }
+#clip-controls-bar {
+    display:none;
+    width:100%;
+    background:#181818;
+    color:#ccc;
+    padding:10px 20px;
+    border-top:1px solid #2a2a2a;
+    box-sizing:border-box;
+    font-size:14px
+}
 
-        .manual-clipper {
-            margin-top: 35px;
-            width: 100%;
-            max-width: 760px;
-            background: #181818;
-            border: 1px solid #333;
-            border-radius: 14px;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: left;
-        }
+.clip-summary {
+    font-weight:bold;
+    color:#fff;
+    margin-bottom:8px
+}
 
-        .manual-clipper h2 {
-            margin-top: 0;
-            text-align: center;
-        }
+.clip-nav-actions {
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+    flex-wrap:wrap
+}
 
-        .manual-clipper label {
-            display: block;
-            color: #ccc;
-            font-size: 13px;
-            margin-bottom: 6px;
-            margin-top: 12px;
-        }
+.clip-nav-btn {
+    background:#333;
+    color:white;
+    border:1px solid #555;
+    padding:7px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold
+}
 
-        .manual-clipper input {
-            width: 100%;
-            box-sizing: border-box;
-            background: #0f0f0f;
-            color: white;
-            border: 1px solid #444;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 15px;
-        }
+.clip-nav-btn:hover {
+    background:#444
+}
 
-        .manual-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 8px;
-            align-items: end;
-            margin-top: 10px;
-        }
+#clip-list-bar {
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px
+}
 
-        .manual-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
+.clip-jump-btn {
+    background:#222;
+    color:#ddd;
+    border:1px solid #444;
+    padding:8px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    white-space:nowrap;
+    text-align:left;
+    min-width:150px
+}
 
-        .manual-btn {
-            background: #065fd4;
-            color: white;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+.clip-jump-btn:hover {
+    background:#2f2f2f
+}
 
-        .manual-btn.green {
-            background: #107c10;
-        }
+.clip-jump-btn.active {
+    background:#065fd4;
+    color:white;
+    border-color:#3ea6ff
+}
 
-        .manual-btn.gray {
-            background: #333;
-        }
+.clip-jump-title {
+    display:block;
+    font-weight:bold;
+    margin-bottom:2px
+}
 
-        .manual-btn.red {
-            background: #cc0000;
-        }
+.clip-jump-time {
+    display:block;
+    font-size:12px;
+    color:inherit;
+    opacity:.85
+}
 
-        .manual-btn:hover {
-            filter: brightness(1.15);
-        }
+#fallback-page {
+    display:none;
+    flex:1;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+    overflow-y:auto
+}
 
-        .manual-clip-list {
-            background: #0f0f0f;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 12px;
-            min-height: 44px;
-            color: #ccc;
-            font-size: 14px;
-        }
+.fallback-link {
+    display:block;
+    background:#222;
+    color:#3ea6ff;
+    text-decoration:none;
+    padding:15px 25px;
+    margin-bottom:10px;
+    border-radius:8px;
+    font-size:18px;
+    width:100%;
+    max-width:400px;
+    border:1px solid #444;
+    box-sizing:border-box
+}
 
-        .manual-clip-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #2a2a2a;
-            padding: 8px 0;
-        }
+.fallback-link:hover {
+    background:#333
+}
 
-        .manual-clip-item:last-child {
-            border-bottom: none;
-        }
+.manual-clipper {
+    margin-top:35px;
+    width:100%;
+    max-width:760px;
+    background:#181818;
+    border:1px solid #333;
+    border-radius:14px;
+    padding:20px;
+    box-sizing:border-box;
+    text-align:left
+}
 
-        .manual-output {
-            width: 100%;
-            min-height: 190px;
-            margin-top: 12px;
-            background: #000;
-            color: #00ff66;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
-            box-sizing: border-box;
-            font-family: monospace;
-            font-size: 13px;
-            white-space: pre;
-        }
+.manual-clipper h2 {
+    text-align:center;
+    margin-top:0
+}
 
-        .manual-message {
-            margin-top: 10px;
-            color: #aaa;
-            font-size: 13px;
-        }
+.manual-clipper label {
+    display:block;
+    color:#ccc;
+    font-size:13px;
+    margin:12px 0 6px
+}
 
-        @media (max-width: 640px) {
-            #install-page {
-                padding-top: 25px;
-            }
+.manual-clipper input {
+    width:100%;
+    box-sizing:border-box;
+    background:#0f0f0f;
+    color:white;
+    border:1px solid #444;
+    border-radius:8px;
+    padding:10px;
+    font-size:15px
+}
 
-            #install-page h1 {
-                font-size: 36px;
-            }
+.manual-row {
+    display:grid;
+    grid-template-columns:1fr 1fr auto;
+    gap:8px;
+    align-items:end;
+    margin-top:10px
+}
 
-            .bookmarklet-btn {
-                font-size: 17px;
-                padding: 14px 24px;
-            }
+.manual-actions {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:16px
+}
 
-            .manual-row {
-                grid-template-columns: 1fr;
-            }
+.manual-btn {
+    background:#065fd4;
+    color:white;
+    border:none;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold
+}
 
-            .manual-actions {
-                flex-direction: column;
-            }
+.manual-btn.green {
+    background:#107c10
+}
 
-            .manual-btn {
-                width: 100%;
-            }
+.manual-btn.gray {
+    background:#333
+}
 
-            #status-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
+.manual-btn.red {
+    background:#cc0000
+}
 
-            .export-btn {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
+.manual-btn:hover {
+    filter:brightness(1.15)
+}
 
-<body>
+.manual-clip-list {
+    background:#0f0f0f;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:10px;
+    margin-top:12px;
+    min-height:44px;
+    color:#ccc;
+    font-size:14px
+}
 
-    <div id="player-container">
-        <div id="player"></div>
+.manual-clip-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    border-bottom:1px solid #2a2a2a;
+    padding:8px 0
+}
+
+.manual-clip-item:last-child {
+    border-bottom:none
+}
+
+.manual-output {
+    width:100%;
+    min-height:190px;
+    margin-top:12px;
+    background:#000;
+    color:#00ff66;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:12px;
+    box-sizing:border-box;
+    font-family:monospace;
+    font-size:13px;
+    white-space:pre
+}
+
+.manual-message {
+    margin-top:10px;
+    color:#aaa;
+    font-size:13px
+}
+
+@media(max-width:640px) {
+    #install-page {
+        padding-top:25px
+    }
+
+    #install-page h1 {
+        font-size:36px
+    }
+
+    .bookmarklet-btn {
+        font-size:17px;
+        padding:14px 24px
+    }
+
+    .manual-row {
+        grid-template-columns:1fr
+    }
+
+    .manual-actions {
+        flex-direction:column
+    }
+
+    .manual-btn {
+        width:100%
+    }
+
+    #status-bar {
+        flex-direction:column;
+        align-items:stretch
+    }
+
+    .status-actions {
+        width:100%;
+        display:grid;
+        grid-template-columns:1fr 1fr
+    }
+
+    .export-btn, .home-btn {
+        width:100%
+    }
+
+    #clip-controls-bar {
+        padding:10px
+    }
+
+    .clip-nav-actions {
+        display:grid;
+        grid-template-columns:1fr 1fr
+    }
+
+    .clip-nav-btn {
+        width:100%
+    }
+
+    .clip-jump-btn {
+        min-width:135px
+    }
+
+}
+  </style>
+ </head>
+ <body>
+  <div id="player-container">
+   <div id="player">
+   </div>
+  </div>
+  <div id="status-bar">
+   <span id="status-text">
+    Loading clips...
+   </span>
+   <div class="status-actions">
+    <button class="home-btn" id="home-btn-player">
+     🏠 Home
+    </button>
+    <button class="export-btn" id="export-btn-player">
+     ⬇️ Export MP4
+    </button>
+   </div>
+  </div>
+  <div id="clip-controls-bar">
+   <div class="clip-summary" id="clip-summary">
+    Total montage length: --
+   </div>
+   <div class="clip-nav-actions">
+    <button class="clip-nav-btn" id="prev-clip-btn">
+     ⏮ Previous
+    </button>
+    <button class="clip-nav-btn" id="next-clip-btn">
+     Next ⏭
+    </button>
+   </div>
+   <div id="clip-list-bar">
+   </div>
+  </div>
+  <div id="fallback-page">
+   <h2>
+    🔒 Embedding Disabled
+   </h2>
+   <p style="color:#aaa;max-width:500px;margin-bottom:20px">
+    The creator of this video does not allow it to be played outside of YouTube.
+   </p>
+   <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:20px">
+    <button class="home-btn" id="home-btn-fallback">
+     🏠 Home
+    </button>
+    <button class="export-btn" id="export-btn-fallback">
+     ⬇️ Export Montage as MP4
+    </button>
+   </div>
+   <div id="fallback-links-container">
+   </div>
+  </div>
+  <div id="install-page">
+   <h1>
+    ✂️ YT Clipper
+   </h1>
+   <p class="subtitle">
+    Clip YouTube videos on desktop with a bookmarklet, or use the mobile-friendly manual clipper below.
+   </p>
+   <div class="drag-instruction">
+    👇 Desktop: Drag this button to your Bookmarks Bar 👇
+   </div>
+   <a class="bookmarklet-btn" href="#" id="bookmarklet-link" title="YT Clipper">
+    YT Clipper
+   </a>
+   <div class="help-text">
+    <p>
+     Don't see your bookmarks bar? Try
+     <span class="kbd">
+      Ctrl
+     </span>
+     +
+     <span class="kbd">
+      Shift
+     </span>
+     +
+     <span class="kbd">
+      B
+     </span>
+     on Windows or
+     <span class="kbd">
+      Cmd
+     </span>
+     +
+     <span class="kbd">
+      Shift
+     </span>
+     +
+     <span class="kbd">
+      B
+     </span>
+     on Mac.
+    </p>
+    <p>
+     On mobile, use the manual clipper below instead of the bookmarklet.
+    </p>
+   </div>
+   <div class="manual-clipper" id="manual-clipper">
+    <h2>
+     📱 Manual Clipper
+    </h2>
+    <p style="color:#aaa;text-align:center;margin-top:-5px">
+     Mobile-friendly mode. Paste a YouTube link, enter timestamps, then copy the export command.
+    </p>
+    <label for="manual-youtube-url">
+     YouTube URL or Video ID
+    </label>
+    <input id="manual-youtube-url" placeholder="https://www.youtube.com/watch?v=qVnRV53Ea50" type="text"/>
+    <label for="manual-montage-name">
+     Montage Name
+    </label>
+    <input id="manual-montage-name" placeholder="Montage" type="text" value="Montage"/>
+    <div class="manual-row">
+     <div>
+      <label for="manual-start">
+       Start Time
+      </label>
+      <input id="manual-start" placeholder="756.7 or 12:36.7" type="text"/>
+     </div>
+     <div>
+      <label for="manual-end">
+       End Time
+      </label>
+      <input id="manual-end" placeholder="798.7 or 13:18.7" type="text"/>
+     </div>
+     <button class="manual-btn green" id="manual-add-clip">
+      Add Clip
+     </button>
     </div>
-
-    <div id="status-bar">
-        <span id="status-text">Loading clips...</span>
-        <button class="export-btn" id="export-btn-player">⬇️ Export MP4</button>
+    <div class="manual-clip-list" id="manual-clip-list">
+     No clips added yet.
     </div>
-
-    <div id="fallback-page">
-        <h2>🔒 Embedding Disabled</h2>
-        <p style="color: #aaa; max-width: 500px; margin-bottom: 20px;">
-            The creator of this video does not allow it to be played outside of YouTube.
-        </p>
-        <button class="export-btn" id="export-btn-fallback" style="margin-bottom: 20px;">
-            ⬇️ Export Montage as MP4
-        </button>
-        <div id="fallback-links-container"></div>
+    <div class="manual-actions">
+     <button class="manual-btn" id="manual-generate-command">
+      Generate Command
+     </button>
+     <button class="manual-btn green" id="manual-copy-command">
+      Copy Command
+     </button>
+     <button class="manual-btn gray" id="manual-copy-share-link">
+      Copy Share Link
+     </button>
+     <button class="manual-btn gray" id="manual-open-share-link">
+      Open Share Link
+     </button>
+     <button class="manual-btn gray" id="manual-open-colab">
+      Open Colab
+     </button>
+     <button class="manual-btn red" id="manual-clear-clips">
+      Clear Clips
+     </button>
     </div>
-
-    <div id="install-page">
-        <h1>✂️ YT Clipper</h1>
-        <p class="subtitle">
-            Clip YouTube videos on desktop with a bookmarklet, or use the mobile-friendly manual clipper below.
-        </p>
-
-        <div class="drag-instruction">👇 Desktop: Drag this button to your Bookmarks Bar 👇</div>
-
-        <a
-            id="bookmarklet-link"
-            class="bookmarklet-btn"
-            title="YT Clipper"
-            href="#"
-        >
-            YT Clipper
-        </a>
-
-        <div class="help-text">
-            <p>
-                Don't see your bookmarks bar?
-                Try <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">B</span>
-                on Windows or
-                <span class="kbd">Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">B</span>
-                on Mac.
-            </p>
-            <p>
-                On mobile, use the manual clipper below instead of the bookmarklet.
-            </p>
-        </div>
-
-        <div class="manual-clipper" id="manual-clipper">
-            <h2>📱 Manual Clipper</h2>
-
-            <p style="color:#aaa;text-align:center;margin-top:-5px;">
-                Mobile-friendly mode. Paste a YouTube link, enter timestamps, then copy the export command.
-            </p>
-
-            <label for="manual-youtube-url">YouTube URL or Video ID</label>
-            <input
-                id="manual-youtube-url"
-                type="text"
-                placeholder="https://www.youtube.com/watch?v=qVnRV53Ea50"
-            >
-
-            <label for="manual-montage-name">Montage Name</label>
-            <input
-                id="manual-montage-name"
-                type="text"
-                placeholder="Montage"
-                value="Montage"
-            >
-
-            <div class="manual-row">
-                <div>
-                    <label for="manual-start">Start Time</label>
-                    <input id="manual-start" type="text" placeholder="756.7 or 12:36.7">
-                </div>
-
-                <div>
-                    <label for="manual-end">End Time</label>
-                    <input id="manual-end" type="text" placeholder="798.7 or 13:18.7">
-                </div>
-
-                <button class="manual-btn green" id="manual-add-clip">Add Clip</button>
-            </div>
-
-            <div class="manual-clip-list" id="manual-clip-list">
-                No clips added yet.
-            </div>
-
-            <div class="manual-actions">
-                <button class="manual-btn" id="manual-generate-command">Generate Command</button>
-                <button class="manual-btn green" id="manual-copy-command">Copy Command</button>
-                <button class="manual-btn gray" id="manual-copy-share-link">Copy Share Link</button>
-                <button class="manual-btn gray" id="manual-open-colab">Open Colab</button>
-                <button class="manual-btn red" id="manual-clear-clips">Clear Clips</button>
-            </div>
-
-            <textarea
-                class="manual-output"
-                id="manual-output"
-                readonly
-                placeholder="Your generated yt-dlp command will appear here..."
-            ></textarea>
-
-            <div class="manual-message" id="manual-message"></div>
-        </div>
-
-        <div class="github-link">
-            <a href="https://github.com/bindzume/yt-clipper-bookmarklet" target="_blank">
-                View Source on GitHub
-            </a>
-        </div>
+    <textarea class="manual-output" id="manual-output" placeholder="Your generated yt-dlp command will appear here..." readonly=""></textarea>
+    <div class="manual-message" id="manual-message">
     </div>
-
-    <script type="text/plain" id="bookmarklet-source">
-(function(){
-if(document.getElementById('yt-clipper-ui'))return;
-
-const B='https://bindzume.github.io/yt-clipper-bookmarklet/';
-const COLAB_URL='https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb';
-
-let t=null;
-let n=null;
-let actM='Default';
-
-const d=new URLSearchParams(window.location.search).get('v');
-const vEl=document.querySelector('video');
-
-const mk=(tag,id,css,text)=>{
-    let e=document.createElement(tag);
-    if(id)e.id=id;
-    if(css)e.style.cssText=css;
-    if(text!==undefined)e.textContent=text;
+   </div>
+   <div class="github-link">
+    <a href="https://github.com/bindzume/yt-clipper-bookmarklet" target="_blank">
+     View Source on GitHub
+    </a>
+   </div>
+  </div>
+  <script id="bookmarklet-source" type="text/plain">
+   (function(){
+if (document.getElementById('yt-clipper-ui')) return;
+const B = 'https://bindzume.github.io/yt-clipper-bookmarklet/';
+const COLAB_URL = 'https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb';
+let t = null,
+    n = null,
+    actM = 'Default';
+const d = new URLSearchParams(window.location.search).get('v');
+const vEl = document.querySelector('video');
+const mk = (tag, id, css, text) => {
+    let e = document.createElement(tag);
+    if (id) e.id = id;
+    if (css) e.style.cssText = css;
+    if (text !== undefined) e.textContent = text;
     return e;
 };
-
-const fT=s=>{
-    if(s===null||s===undefined)return'--';
-    let m=Math.floor(s/60);
-    let S=Math.floor(s%60).toString().padStart(2,'0');
-    let dec=Math.round((s%1)*10);
-    return dec?`${m}:${S}.${dec}`:`${m}:${S}`;
+const fT = s => {
+    if (s === null || s === undefined) return '--';
+    let m = Math.floor(s / 60),
+        S = Math.floor(s % 60).toString().padStart(2, '0'),
+        dec = Math.round((s % 1) * 10);
+    return dec ? `${m}:${S}.${dec}` : `${m}:${S}`;
 };
-
-const safeName=name=>{
-    return String(name||'Montage').trim().replace(/[^a-z0-9_-]+/gi,'_').replace(/^_+|_+$/g,'')||'Montage';
-};
-
-const getLib=()=>{
-    return JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-};
-
-const saveLib=lib=>{
-    localStorage.setItem('yt-clipper-library',JSON.stringify(lib));
-};
-
-const getData=()=>{
-    let lib=getLib();
-    let vD=lib[d];
-
-    if(!vD){
-        vD={
-            title:document.title.replace(' - YouTube',''),
-            montages:{Default:[]}
+const safeName = name => String(name || 'Montage').trim().replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Montage';
+const getLib = () => JSON.parse(localStorage.getItem('yt-clipper-library') || '{}');
+const saveLib = lib => localStorage.setItem('yt-clipper-library', JSON.stringify(lib));
+const getData = () => {
+    let lib = getLib(),
+        vD = lib[d];
+    if (!vD) vD = {
+        title: document.title.replace(' - YouTube', ''),
+        montages: {
+            Default: []
+        }
+    };
+    if (vD.clips) {
+        vD.montages = {
+            Default: vD.clips
         };
-    }
-
-    if(vD.clips){
-        vD.montages={Default:vD.clips};
         delete vD.clips;
     }
-
-    if(!vD.montages)vD.montages={Default:[]};
-
-    if(!vD.montages[actM]){
-        let keys=Object.keys(vD.montages);
-        actM=keys.length?keys[0]:'Default';
+    if (!vD.montages) vD.montages = {
+        Default: []
+    };
+    if (!vD.montages[actM]) {
+        let keys = Object.keys(vD.montages);
+        actM = keys.length ? keys[0] : 'Default';
     }
-
-    if(!vD.montages[actM])vD.montages[actM]=[];
-
-    lib[d]=vD;
+    if (!vD.montages[actM]) vD.montages[actM] = [];
+    lib[d] = vD;
     saveLib(lib);
-
-    return {lib,vD};
+    return {
+        lib,
+        vD
+    };
 };
-
-const saveData=(lib,vD)=>{
-    lib[d]=vD;
+const saveData = (lib, vD) => {
+    lib[d] = vD;
     saveLib(lib);
 };
-
-const buildCmd=(clips,mName,vid)=>{
-    let out=`YT_${safeName(mName)}_${vid}.mp4`;
-    let sectionLines=clips.map(c=>`  --download-sections "*${c.start}-${c.end}" \\`).join('\n');
-
-    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
-${sectionLines}
-  --force-keyframes-at-cuts \\
-  --merge-output-format mp4 \\
-  "https://www.youtube.com/watch?v=${vid}" \\
-  -o "part_%(autonumber)02d.%(ext)s" \\
-  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
-  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${out}" \\
-  && rm part_*.mp4 inputs.txt`;
+const buildCmd = (clips, mName, vid) => {
+    let out = `YT_${safeName(mName)}_${vid}.mp4`;
+    let sectionLines = clips.map(c => `  --download-sections "*${c.start}-${c.end}" \\`).join('\n');
+    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\\n${sectionLines}\n  --force-keyframes-at-cuts \\\n  --merge-output-format mp4 \\\n  "https://www.youtube.com/watch?v=${vid}" \\\n  -o "part_%(autonumber)02d.%(ext)s" \\\n  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\\n  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${out}" \\\n  && rm part_*.mp4 inputs.txt`;
 };
-
-const copyText=async text=>{
-    try{
+const copyText = async text => {
+    try {
         await navigator.clipboard.writeText(text);
-    }catch(e){
-        let ta=document.createElement('textarea');
-        ta.value=text;
+    } catch (e) {
+        let ta = document.createElement('textarea');
+        ta.value = text;
         document.body.appendChild(ta);
         ta.focus();
         ta.select();
@@ -566,903 +702,704 @@ const copyText=async text=>{
         ta.remove();
     }
 };
-
-const showCmdModal=cmd=>{
-    let old=document.getElementById('yt-dlp-modal');
-    if(old)old.remove();
-
-    let modal=mk('div','yt-dlp-modal','position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;');
-    let box=mk('div','','width:90%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.8);box-sizing:border-box;');
-
-    box.appendChild(mk('h2','','margin-top:0;','Export yt-dlp Command'));
-    box.appendChild(mk('p','','color:#aaa;','Copy this command, then optionally open Google Colab to run it.'));
-
-    let ta=mk('textarea','','width:100%;height:260px;background:#000;color:#0f0;border:1px solid #333;border-radius:8px;padding:12px;box-sizing:border-box;font-family:monospace;font-size:13px;resize:vertical;white-space:pre;');
-    ta.value=cmd;
-    ta.readOnly=true;
-
-    let buttons=mk('div','','display:flex;justify-content:flex-end;gap:10px;margin-top:15px;flex-wrap:wrap;');
-
-    let copy=mk('button','','background:#065fd4;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Copy Command');
-    copy.onclick=async()=>{
+const showCmdModal = cmd => {
+    let old = document.getElementById('yt-dlp-modal');
+    if (old) old.remove();
+    let modal = mk('div', 'yt-dlp-modal', 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:14px;box-sizing:border-box;');
+    let box = mk('div', '', 'width:100%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.8);box-sizing:border-box;');
+    box.appendChild(mk('h2', '', 'margin-top:0;', 'Export yt-dlp Command'));
+    box.appendChild(mk('p', '', 'color:#aaa;', 'Copy this command, then optionally open Google Colab to run it.'));
+    let ta = mk('textarea', '', 'width:100%;height:260px;background:#000;color:#0f0;border:1px solid #333;border-radius:8px;padding:12px;box-sizing:border-box;font-family:monospace;font-size:13px;resize:vertical;white-space:pre;');
+    ta.value = cmd;
+    ta.readOnly = true;
+    let buttons = mk('div', '', 'display:flex;justify-content:flex-end;gap:10px;margin-top:15px;flex-wrap:wrap;');
+    let copy = mk('button', '', 'background:#065fd4;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;', 'Copy Command');
+    copy.onclick = async () => {
         await copyText(cmd);
-        copy.textContent='Copied!';
-        setTimeout(()=>copy.textContent='Copy Command',1200);
+        copy.textContent = 'Copied!';
+        setTimeout(() => copy.textContent = 'Copy Command', 1200);
     };
-
-    let colab=mk('button','','background:#107c10;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Go to Colab');
-    colab.onclick=()=>{
-        window.open(COLAB_URL,'_blank');
-    };
-
-    let cancel=mk('button','','background:#333;color:white;border:1px solid #555;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Cancel');
-    cancel.onclick=()=>modal.remove();
-
+    let colab = mk('button', '', 'background:#107c10;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;', 'Go to Colab');
+    colab.onclick = () => window.open(COLAB_URL, '_blank');
+    let cancel = mk('button', '', 'background:#333;color:white;border:1px solid #555;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;', 'Cancel');
+    cancel.onclick = () => modal.remove();
     buttons.appendChild(copy);
     buttons.appendChild(colab);
     buttons.appendChild(cancel);
-
     box.appendChild(ta);
     box.appendChild(buttons);
     modal.appendChild(box);
     document.body.appendChild(modal);
-
     ta.focus();
     ta.select();
 };
-
-const u=mk('div','yt-clipper-ui','position:fixed;top:60px;right:20px;background:rgba(0,0,0,0.95);color:white;padding:15px;z-index:999999;border-radius:8px;font-family:sans-serif;width:270px;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid #333;box-sizing:border-box;');
-
-u.appendChild(mk('h3','','margin-top:0;border-bottom:1px solid #555;padding-bottom:5px;','✂️ YT Clipper'));
-
-const montageRow=mk('div','','display:flex;gap:5px;margin-bottom:10px;align-items:center;');
-const montageSelect=mk('select','','flex:1;background:#222;color:white;border:1px solid #444;padding:4px;border-radius:4px;');
-const montageAdd=mk('button','','background:#065fd4;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;','+');
-
+const u = mk('div', 'yt-clipper-ui', 'position:fixed;top:60px;right:20px;background:rgba(0,0,0,.95);color:white;padding:15px;z-index:999999;border-radius:8px;font-family:sans-serif;width:280px;box-shadow:0 4px 10px rgba(0,0,0,.5);border:1px solid #333;box-sizing:border-box;');
+u.appendChild(mk('h3', '', 'margin-top:0;border-bottom:1px solid #555;padding-bottom:5px;', '✂️ YT Clipper'));
+const montageRow = mk('div', '', 'display:flex;gap:5px;margin-bottom:10px;align-items:center;'),
+    montageSelect = mk('select', '', 'flex:1;background:#222;color:white;border:1px solid #444;padding:4px;border-radius:4px;'),
+    montageAdd = mk('button', '', 'background:#065fd4;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;', '+');
 montageRow.appendChild(montageSelect);
 montageRow.appendChild(montageAdd);
 u.appendChild(montageRow);
-
-const bS=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark Start');
-const bE=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark End');
-const sT=mk('div','','margin-bottom:10px;font-size:12px;color:#ccc;text-align:center;','Start: -- | End: --');
-const bV=mk('button','','width:100%;margin-bottom:10px;padding:8px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','Save Clip');
-
+const bS = mk('button', '', 'width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;', 'Mark Start'),
+    bE = mk('button', '', 'width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;', 'Mark End'),
+    sT = mk('div', '', 'margin-bottom:10px;font-size:12px;color:#ccc;text-align:center;', 'Start: -- | End: --'),
+    bV = mk('button', '', 'width:100%;margin-bottom:10px;padding:8px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;', 'Save Clip');
 u.appendChild(bS);
 u.appendChild(bE);
 u.appendChild(sT);
 u.appendChild(bV);
-
-u.appendChild(mk('h4','','margin:0 0 5px 0;font-size:13px;color:#aaa;','Clips in Montage'));
-
-const cL=mk('div','','font-size:12px;max-height:140px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
+u.appendChild(mk('h4', '', 'margin:0 0 5px 0;font-size:13px;color:#aaa;', 'Clips in Montage'));
+const cL = mk('div', '', 'font-size:12px;max-height:140px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
 u.appendChild(cL);
-
-const shareRow=mk('div','','display:flex;gap:5px;margin-bottom:5px;');
-
-const bCopySh=mk(
-    'button',
-    '',
-    'flex:1;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;',
-    'Copy Share Link'
-);
-
-const bOpenSh=mk(
-    'button',
-    '',
-    'flex:1;padding:6px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;',
-    'Open Share Link'
-);
-
+const shareRow = mk('div', '', 'display:flex;gap:5px;margin-bottom:5px;'),
+    bCopySh = mk('button', '', 'flex:1;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;', 'Copy Share Link'),
+    bOpenSh = mk('button', '', 'flex:1;padding:6px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;', 'Open Share Link');
 shareRow.appendChild(bCopySh);
 shareRow.appendChild(bOpenSh);
-
-const bYt=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;','Export yt-dlp Cmd');
-const bC=mk('button','','width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;','Close');
-
+const bYt = mk('button', '', 'width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;', 'Export yt-dlp Cmd'),
+    bC = mk('button', '', 'width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;', 'Close');
 u.appendChild(shareRow);
 u.appendChild(bYt);
 u.appendChild(bC);
 document.body.appendChild(u);
-
-const updateStartEnd=()=>{
-    sT.textContent=`Start: ${fT(t)} | End: ${fT(n)}`;
-};
-
-const render=()=>{
-    if(!d){
-        cL.textContent='';
-        cL.appendChild(mk('span','','color:#ff5555','Not a YouTube video page.'));
+const updateStartEnd = () => sT.textContent = `Start: ${fT(t)} | End: ${fT(n)}`;
+const render = () => {
+    if (!d) {
+        cL.textContent = '';
+        cL.appendChild(mk('span', '', 'color:#ff5555', 'Not a YouTube video page.'));
         return;
     }
-
-    let {lib,vD}=getData();
-
-    montageSelect.textContent='';
-    Object.keys(vD.montages).forEach(name=>{
-        let opt=mk('option','','',name);
-        opt.value=name;
-        if(name===actM)opt.selected=true;
+    let {
+        lib,
+        vD
+    } = getData();
+    montageSelect.textContent = '';
+    Object.keys(vD.montages).forEach(name => {
+        let opt = mk('option', '', '', name);
+        opt.value = name;
+        if (name === actM) opt.selected = true;
         montageSelect.appendChild(opt);
     });
-
-    cL.textContent='';
-    let clips=vD.montages[actM];
-
-    if(!clips||clips.length===0){
-        cL.appendChild(mk('i','','','No clips yet.'));
+    cL.textContent = '';
+    let clips = vD.montages[actM];
+    if (!clips || clips.length === 0) {
+        cL.appendChild(mk('i', '', '', 'No clips yet.'));
         return;
     }
-
-    clips.forEach((c,i)=>{
-    let row=mk(
-        'div',
-        '',
-        'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;gap:4px;'
-    );
-
-    let txt=mk(
-        'span',
-        '',
-        'flex:1;',
-        `${i+1}. ${fT(c.start)}-${fT(c.end)}`
-    );
-
-    let btnGroup=mk(
-        'div',
-        '',
-        'display:flex;gap:2px;align-items:center;'
-    );
-
-    let up=mk(
-        'button',
-        '',
-        'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
-        '↑'
-    );
-
-    let down=mk(
-        'button',
-        '',
-        'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
-        '↓'
-    );
-
-    let del=mk(
-        'button',
-        '',
-        'background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;',
-        'X'
-    );
-
-    up.disabled=i===0;
-    down.disabled=i===clips.length-1;
-
-    up.style.opacity=i===0?'0.35':'1';
-    down.style.opacity=i===clips.length-1?'0.35':'1';
-
-    up.onclick=()=>{
-        if(i>0){
-            let tmp=clips[i];
-            clips[i]=clips[i-1];
-            clips[i-1]=tmp;
-            saveData(lib,vD);
-            render();
-        }
-    };
-
-    down.onclick=()=>{
-        if(i<clips.length-1){
-            let tmp=clips[i];
-            clips[i]=clips[i+1];
-            clips[i+1]=tmp;
-            saveData(lib,vD);
-            render();
-        }
-    };
-
-    del.onclick=()=>{
-        if(confirm('Remove clip?')){
-            clips.splice(i,1);
-            saveData(lib,vD);
-            render();
-        }
-    };
-
-    btnGroup.appendChild(up);
-    btnGroup.appendChild(down);
-    btnGroup.appendChild(del);
-
-    row.appendChild(txt);
-    row.appendChild(btnGroup);
-    cL.appendChild(row);
-});
+    clips.forEach((c, i) => {
+        let row = mk('div', '', 'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;gap:4px;');
+        let txt = mk('span', '', 'flex:1;', `${i+1}. ${fT(c.start)}-${fT(c.end)}`);
+        let btnGroup = mk('div', '', 'display:flex;gap:2px;align-items:center;');
+        let up = mk('button', '', 'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;', '↑');
+        let down = mk('button', '', 'background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;', '↓');
+        let del = mk('button', '', 'background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;border-radius:2px;', 'X');
+        up.disabled = i === 0;
+        down.disabled = i === clips.length - 1;
+        up.style.opacity = i === 0 ? '.35' : '1';
+        down.style.opacity = i === clips.length - 1 ? '.35' : '1';
+        up.onclick = () => {
+            if (i > 0) {
+                let tmp = clips[i];
+                clips[i] = clips[i - 1];
+                clips[i - 1] = tmp;
+                saveData(lib, vD);
+                render();
+            }
+        };
+        down.onclick = () => {
+            if (i < clips.length - 1) {
+                let tmp = clips[i];
+                clips[i] = clips[i + 1];
+                clips[i + 1] = tmp;
+                saveData(lib, vD);
+                render();
+            }
+        };
+        del.onclick = () => {
+            if (confirm('Remove clip?')) {
+                clips.splice(i, 1);
+                saveData(lib, vD);
+                render();
+            }
+        };
+        btnGroup.appendChild(up);
+        btnGroup.appendChild(down);
+        btnGroup.appendChild(del);
+        row.appendChild(txt);
+        row.appendChild(btnGroup);
+        cL.appendChild(row);
+    });
 };
-
-montageSelect.onchange=e=>{
-    actM=e.target.value;
-    render();
-};
-
-montageAdd.onclick=()=>{
-    let nm=prompt('New Montage Name:');
-    if(nm&&nm.trim()){
-        let {lib,vD}=getData();
-        if(!vD.montages[nm]){
-            vD.montages[nm]=[];
-            actM=nm;
-            saveData(lib,vD);
-            render();
-        }
-    }
-};
-
-bS.onclick=()=>{
-    if(vEl){
-        t=Math.round(vEl.currentTime*10)/10;
-        updateStartEnd();
-    }
-};
-
-bE.onclick=()=>{
-    if(vEl){
-        n=Math.round(vEl.currentTime*10)/10;
-        updateStartEnd();
-    }
-};
-
-bV.onclick=()=>{
-    if(t!==null&&n!==null&&n>t&&d){
-        let {lib,vD}=getData();
-        vD.montages[actM].push({start:t,end:n});
-        saveData(lib,vD);
-        t=null;
-        n=null;
-        updateStartEnd();
-        render();
-    }else{
-        alert('Valid start/end time required.');
-    }
-};
-
-const getShareLink=()=>{
-    let {vD}=getData();
-    let clips=vD.montages[actM];
-
-    if(!clips||clips.length===0){
+const getShareLink = () => {
+    let {
+        vD
+    } = getData(), clips = vD.montages[actM];
+    if (!clips || clips.length === 0) {
         alert('No clips in this montage.');
         return null;
     }
-
-    let cS=clips.map(c=>`${c.start}-${c.end}`).join(',');
+    let cS = clips.map(c => `${c.start}-${c.end}`).join(',');
     return `${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${encodeURIComponent(cS)}`;
 };
-
-bCopySh.onclick=async()=>{
-    let link=getShareLink();
-    if(!link)return;
-
+montageSelect.onchange = e => {
+    actM = e.target.value;
+    render();
+};
+montageAdd.onclick = () => {
+    let nm = prompt('New Montage Name:');
+    if (nm && nm.trim()) {
+        let {
+            lib,
+            vD
+        } = getData();
+        if (!vD.montages[nm]) {
+            vD.montages[nm] = [];
+            actM = nm;
+            saveData(lib, vD);
+            render();
+        }
+    }
+};
+bS.onclick = () => {
+    if (vEl) {
+        t = Math.round(vEl.currentTime * 10) / 10;
+        updateStartEnd();
+    }
+};
+bE.onclick = () => {
+    if (vEl) {
+        n = Math.round(vEl.currentTime * 10) / 10;
+        updateStartEnd();
+    }
+};
+bV.onclick = () => {
+    if (t !== null && n !== null && n > t && d) {
+        let {
+            lib,
+            vD
+        } = getData();
+        vD.montages[actM].push({
+            start: t,
+            end: n
+        });
+        saveData(lib, vD);
+        t = null;
+        n = null;
+        updateStartEnd();
+        render();
+    } else alert('Valid start/end time required.');
+};
+bCopySh.onclick = async () => {
+    let link = getShareLink();
+    if (!link) return;
     await copyText(link);
-
-    bCopySh.textContent='Copied!';
-    setTimeout(()=>bCopySh.textContent='Copy Share Link',1200);
+    bCopySh.textContent = 'Copied!';
+    setTimeout(() => bCopySh.textContent = 'Copy Share Link', 1200);
 };
-
-bOpenSh.onclick=()=>{
-    let link=getShareLink();
-    if(!link)return;
-
-    window.open(link,'_blank');
+bOpenSh.onclick = () => {
+    let link = getShareLink();
+    if (link) window.open(link, '_blank');
 };
-
-bYt.onclick=()=>{
-    let {vD}=getData();
-    let clips=vD.montages[actM];
-
-    if(!clips||clips.length===0)return alert('No clips to export.');
-
-    showCmdModal(buildCmd(clips,actM,d));
+bYt.onclick = () => {
+    let {
+        vD
+    } = getData(), clips = vD.montages[actM];
+    if (!clips || clips.length === 0) return alert('No clips to export.');
+    showCmdModal(buildCmd(clips, actM, d));
 };
-
-bC.onclick=()=>{
+bC.onclick = () => {
     u.remove();
-    let modal=document.getElementById('yt-dlp-modal');
-    if(modal)modal.remove();
+    let modal = document.getElementById('yt-dlp-modal');
+    if (modal) modal.remove();
 };
-
 render();
 })();
-    </script>
-
-    <script>
-        const COLAB_URL = "https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb";
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('v');
-        const clipsParam = urlParams.get('clips');
-        const montageNameParam = urlParams.get('m') || 'Montage';
-
-        const bookmarkletSource = document.getElementById('bookmarklet-source').textContent.trim();
-        document.getElementById('bookmarklet-link').href = 'javascript:' + encodeURIComponent(bookmarkletSource);
-
-        const statusText = document.getElementById('status-text');
-
-        let clips = [];
-        let currentClipIndex = 0;
-        let player;
-        let timeChecker;
-        let manualClips = [];
-
-        const formatTime = (seconds) => {
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-            const decimal = Math.round((seconds % 1) * 10);
-            return decimal ? `${m}:${s}.${decimal}` : `${m}:${s}`;
-        };
-
-        const safeFileName = (name) => {
-            return String(name || 'Montage')
-                .trim()
-                .replace(/[^a-z0-9_-]+/gi, '_')
-                .replace(/^_+|_+$/g, '') || 'Montage';
-        };
-
-        async function copyTextToClipboard(text) {
-            try {
-                await navigator.clipboard.writeText(text);
-            } catch (e) {
-                const temp = document.createElement("textarea");
-                temp.value = text;
-                document.body.appendChild(temp);
-                temp.focus();
-                temp.select();
-                document.execCommand("copy");
-                document.body.removeChild(temp);
-            }
-        }
-
-        function buildYtDlpCommand(videoIdForCommand, clipsForCommand, montageNameForCommand) {
-            if (!videoIdForCommand || !clipsForCommand || clipsForCommand.length === 0) return '';
-
-            const safeMontageName = safeFileName(montageNameForCommand);
-            const outputFile = `YT_${safeMontageName}_${videoIdForCommand}.mp4`;
-
-            const sectionLines = clipsForCommand
-                .map(c => `  --download-sections "*${c.start}-${c.end}" \\`)
-                .join('\n');
-
-            return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
-${sectionLines}
-  --force-keyframes-at-cuts \\
-  --merge-output-format mp4 \\
-  "https://www.youtube.com/watch?v=${videoIdForCommand}" \\
-  -o "part_%(autonumber)02d.%(ext)s" \\
-  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
-  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${outputFile}" \\
-  && rm part_*.mp4 inputs.txt`;
-        }
-
-        function showYtDlpModal(cmd) {
-            const existing = document.getElementById('yt-dlp-modal');
-            if (existing) existing.remove();
-
-            const modal = document.createElement('div');
-            modal.id = 'yt-dlp-modal';
-            modal.style.cssText = `
-                position: fixed;
-                inset: 0;
-                background: rgba(0,0,0,0.75);
-                z-index: 999999;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-family: sans-serif;
-                padding: 14px;
-                box-sizing: border-box;
-            `;
-
-            const box = document.createElement('div');
-            box.style.cssText = `
-                width: 100%;
-                max-width: 760px;
-                background: #111;
-                color: white;
-                border: 1px solid #444;
-                border-radius: 12px;
-                padding: 20px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-                box-sizing: border-box;
-            `;
-
-            const title = document.createElement('h2');
-            title.textContent = 'Export yt-dlp Command';
-            title.style.marginTop = '0';
-
-            const desc = document.createElement('p');
-            desc.textContent = 'Copy this command, then optionally open Google Colab to run it.';
-            desc.style.color = '#aaa';
-
-            const textarea = document.createElement('textarea');
-            textarea.value = cmd;
-            textarea.readOnly = true;
-            textarea.style.cssText = `
-                width: 100%;
-                height: 260px;
-                background: #000;
-                color: #0f0;
-                border: 1px solid #333;
-                border-radius: 8px;
-                padding: 12px;
-                box-sizing: border-box;
-                font-family: monospace;
-                font-size: 13px;
-                resize: vertical;
-                white-space: pre;
-            `;
-
-            const buttons = document.createElement('div');
-            buttons.style.cssText = `
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-                margin-top: 15px;
-                flex-wrap: wrap;
-            `;
-
-            const copyBtn = document.createElement('button');
-            copyBtn.textContent = 'Copy Command';
-            copyBtn.style.cssText = `
-                background: #065fd4;
-                color: white;
-                border: none;
-                padding: 10px 14px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: bold;
-            `;
-
-            copyBtn.onclick = async () => {
-                await copyTextToClipboard(cmd);
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
-            };
-
-            const colabBtn = document.createElement('button');
-            colabBtn.textContent = 'Go to Colab';
-            colabBtn.style.cssText = `
-                background: #107c10;
-                color: white;
-                border: none;
-                padding: 10px 14px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: bold;
-            `;
-
-            colabBtn.onclick = () => {
-                window.open(COLAB_URL, '_blank');
-            };
-
-            const cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Cancel';
-            cancelBtn.style.cssText = `
-                background: #333;
-                color: white;
-                border: 1px solid #555;
-                padding: 10px 14px;
-                border-radius: 6px;
-                cursor: pointer;
-                font-weight: bold;
-            `;
-
-            cancelBtn.onclick = () => modal.remove();
-
-            buttons.appendChild(copyBtn);
-            buttons.appendChild(colabBtn);
-            buttons.appendChild(cancelBtn);
-
-            box.appendChild(title);
-            box.appendChild(desc);
-            box.appendChild(textarea);
-            box.appendChild(buttons);
-
-            modal.appendChild(box);
-            document.body.appendChild(modal);
-
-            textarea.focus();
-            textarea.select();
-        }
-
-        function generateYtDlpCommand() {
-            const cmd = buildYtDlpCommand(videoId, clips, montageNameParam);
-            if (!cmd) return;
-            showYtDlpModal(cmd);
-        }
-
-        document.getElementById('export-btn-player').onclick = generateYtDlpCommand;
-        document.getElementById('export-btn-fallback').onclick = generateYtDlpCommand;
-
-        function loadYouTubeAPI() {
-            if (clipsParam) {
-                clips = clipsParam.split(',').map(clip => {
-                    const parts = clip.split('-');
-                    return {
-                        start: parseFloat(parts[0]),
-                        end: parseFloat(parts[1])
-                    };
-                }).filter(c => !Number.isNaN(c.start) && !Number.isNaN(c.end) && c.end > c.start);
-            }
-
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-
-        window.onYouTubeIframeAPIReady = function() {
-            if (clips.length === 0) {
-                statusText.innerText = "Error: Missing clips in URL.";
-                return;
-            }
-
-            player = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: videoId,
-                playerVars: {
-                    playsinline: 1,
-                    start: Math.floor(clips[0].start),
-                    autoplay: 1,
-                    controls: 1
-                },
-                events: {
-                    onReady: onPlayerReady,
-                    onError: onPlayerError
-                }
-            });
-        };
-
-        function onPlayerReady(event) {
-            statusText.innerText = `Playing clip 1 of ${clips.length}`;
-            event.target.playVideo();
-            timeChecker = setInterval(checkTime, 100);
-        }
-
-        function onPlayerError(event) {
-            if (event.data === 101 || event.data === 150) {
-                document.getElementById('player-container').style.display = 'none';
-                document.getElementById('status-bar').style.display = 'none';
-                document.getElementById('fallback-page').style.display = 'flex';
-
-                const container = document.getElementById('fallback-links-container');
-                container.textContent = '';
-
-                clips.forEach((clip, index) => {
-                    const link = document.createElement('a');
-                    link.className = 'fallback-link';
-                    link.target = '_blank';
-                    link.href = `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(clip.start)}s`;
-                    link.innerText = `▶ Play Clip ${index + 1} (${formatTime(clip.start)} - ${formatTime(clip.end)})`;
-                    container.appendChild(link);
-                });
-            } else {
-                statusText.innerText = `An error occurred playing this video. Code: ${event.data}`;
-            }
-        }
-
-        function checkTime() {
-            if (!player || !player.getCurrentTime || clips.length === 0) return;
-
-            const currentTime = player.getCurrentTime();
-            const currentClip = clips[currentClipIndex];
-
-            if (currentTime >= currentClip.end) {
-                currentClipIndex++;
-
-                if (currentClipIndex < clips.length) {
-                    player.seekTo(clips[currentClipIndex].start);
-                    statusText.innerText = `Playing clip ${currentClipIndex + 1} of ${clips.length}`;
-                } else {
-                    player.pauseVideo();
-                    statusText.innerText = "All clips finished!";
-                    clearInterval(timeChecker);
-                }
-            }
-        }
-
-        function manualSetMessage(message, isError = false) {
-            const el = document.getElementById("manual-message");
-            if (!el) return;
-
-            el.textContent = message;
-            el.style.color = isError ? "#ff6666" : "#aaa";
-        }
-
-        function parseYouTubeVideoId(url) {
-            try {
-                const trimmed = String(url || "").trim();
-
-                if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
-                    return trimmed;
-                }
-
-                const parsed = new URL(trimmed);
-
-                const v = parsed.searchParams.get("v");
-                if (v) return v;
-
-                if (parsed.hostname.includes("youtu.be")) {
-                    const id = parsed.pathname.split("/").filter(Boolean)[0];
-                    if (id) return id;
-                }
-
-                const parts = parsed.pathname.split("/").filter(Boolean);
-
-                const shortsIndex = parts.indexOf("shorts");
-                if (shortsIndex !== -1 && parts[shortsIndex + 1]) {
-                    return parts[shortsIndex + 1];
-                }
-
-                const embedIndex = parts.indexOf("embed");
-                if (embedIndex !== -1 && parts[embedIndex + 1]) {
-                    return parts[embedIndex + 1];
-                }
-
-                return null;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function parseManualTime(value) {
-            const raw = String(value || "").trim();
-
-            if (!raw) return NaN;
-
-            if (/^\d+(\.\d+)?$/.test(raw)) {
-                return Math.round(parseFloat(raw) * 10) / 10;
-            }
-
-            const parts = raw.split(":").map(p => p.trim());
-
-            if (parts.length < 2 || parts.length > 3) return NaN;
-
-            let seconds = 0;
-
-            if (parts.length === 2) {
-                const minutes = parseFloat(parts[0]);
-                const secs = parseFloat(parts[1]);
-
-                if (Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
-
-                seconds = minutes * 60 + secs;
-            }
-
-            if (parts.length === 3) {
-                const hours = parseFloat(parts[0]);
-                const minutes = parseFloat(parts[1]);
-                const secs = parseFloat(parts[2]);
-
-                if (Number.isNaN(hours) || Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
-
-                seconds = hours * 3600 + minutes * 60 + secs;
-            }
-
-            return Math.round(seconds * 10) / 10;
-        }
-
-        function buildManualShareLink() {
-            const urlInput = document.getElementById("manual-youtube-url").value;
-            const montageName = document.getElementById("manual-montage-name").value || "Montage";
-            const manualVideoId = parseYouTubeVideoId(urlInput);
-
-            if (!manualVideoId) {
-                throw new Error("Please enter a valid YouTube URL or video ID.");
-            }
-
-            if (manualClips.length === 0) {
-                throw new Error("Please add at least one clip.");
-            }
-
-            const clipsString = manualClips
-                .map(c => `${c.start}-${c.end}`)
-                .join(",");
-
-            const baseUrl = `${window.location.origin}${window.location.pathname}`;
-
-            return `${baseUrl}?v=${encodeURIComponent(manualVideoId)}&m=${encodeURIComponent(montageName)}&clips=${encodeURIComponent(clipsString)}`;
-        }
-
-        function buildManualYtDlpCommand() {
-            const urlInput = document.getElementById("manual-youtube-url").value;
-            const montageName = document.getElementById("manual-montage-name").value || "Montage";
-            const manualVideoId = parseYouTubeVideoId(urlInput);
-
-            if (!manualVideoId) {
-                throw new Error("Please enter a valid YouTube URL or video ID.");
-            }
-
-            if (manualClips.length === 0) {
-                throw new Error("Please add at least one clip.");
-            }
-
-            return buildYtDlpCommand(manualVideoId, manualClips, montageName);
-        }
-
-        function renderManualClips() {
-            const list = document.getElementById("manual-clip-list");
-            if (!list) return;
-
-            list.textContent = "";
-
-            if (manualClips.length === 0) {
-                list.textContent = "No clips added yet.";
-                return;
-            }
-
-            manualClips.forEach((clip, index) => {
-    const row = document.createElement("div");
-    row.className = "manual-clip-item";
-
-    const text = document.createElement("span");
-    text.textContent = `${index + 1}. ${formatTime(clip.start)} - ${formatTime(clip.end)}`;
-
-    const buttons = document.createElement("div");
-    buttons.style.cssText = "display:flex;gap:6px;align-items:center;";
-
-    const upBtn = document.createElement("button");
-    upBtn.className = "manual-btn gray";
-    upBtn.style.padding = "5px 9px";
-    upBtn.textContent = "↑";
-    upBtn.disabled = index === 0;
-    upBtn.style.opacity = index === 0 ? "0.35" : "1";
-
-    upBtn.onclick = () => {
-        if (index > 0) {
-            const tmp = manualClips[index];
-            manualClips[index] = manualClips[index - 1];
-            manualClips[index - 1] = tmp;
-            renderManualClips();
-            manualSetMessage("Clip moved up.");
-        }
+  </script>
+  <script>
+   const COLAB_URL = "https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb";
+const HOME_URL = `${window.location.origin}${window.location.pathname}`;
+const urlParams = new URLSearchParams(window.location.search);
+const videoId = urlParams.get('v');
+const clipsParam = urlParams.get('clips');
+const montageNameParam = urlParams.get('m') || 'Montage';
+const bookmarkletSource = document.getElementById('bookmarklet-source').textContent.trim();
+document.getElementById('bookmarklet-link').href = 'javascript:' + encodeURIComponent(bookmarkletSource);
+const statusText = document.getElementById('status-text');
+let clips = [],
+    currentClipIndex = 0,
+    player, timeChecker, manualClips = [];
+const formatTime = seconds => {
+    const m = Math.floor(seconds / 60),
+        s = Math.floor(seconds % 60).toString().padStart(2, '0'),
+        decimal = Math.round((seconds % 1) * 10);
+    return decimal ? `${m}:${s}.${decimal}` : `${m}:${s}`;
+};
+const formatDuration = seconds => {
+    seconds = Math.max(0, seconds || 0);
+    const h = Math.floor(seconds / 3600),
+        m = Math.floor((seconds % 3600) / 60),
+        s = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return h > 0 ? `${h}:${m.toString().padStart(2,'0')}:${s}` : `${m}:${s}`;
+};
+const getClipDuration = clip => Math.max(0, clip.end - clip.start);
+const getTotalMontageLength = () => clips.reduce((total, clip) => total + getClipDuration(clip), 0);
+const safeFileName = name => String(name || 'Montage').trim().replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Montage';
+async function copyTextToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch (e) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.focus();
+        temp.select();
+        document.execCommand('copy');
+        temp.remove();
+    }
+}
+
+function buildYtDlpCommand(videoIdForCommand, clipsForCommand, montageNameForCommand) {
+    if (!videoIdForCommand || !clipsForCommand || clipsForCommand.length === 0) return '';
+    const outputFile = `YT_${safeFileName(montageNameForCommand)}_${videoIdForCommand}.mp4`;
+    const sectionLines = clipsForCommand.map(c => `  --download-sections "*${c.start}-${c.end}" \\`).join('\n');
+    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\\n${sectionLines}\n  --force-keyframes-at-cuts \\\n  --merge-output-format mp4 \\\n  "https://www.youtube.com/watch?v=${videoIdForCommand}" \\\n  -o "part_%(autonumber)02d.%(ext)s" \\\n  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\\n  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${outputFile}" \\\n  && rm part_*.mp4 inputs.txt`;
+}
+
+function showYtDlpModal(cmd) {
+    const existing = document.getElementById('yt-dlp-modal');
+    if (existing) existing.remove();
+    const modal = document.createElement('div');
+    modal.id = 'yt-dlp-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:14px;box-sizing:border-box;';
+    const box = document.createElement('div');
+    box.style.cssText = 'width:100%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.8);box-sizing:border-box;';
+    const title = document.createElement('h2');
+    title.textContent = 'Export yt-dlp Command';
+    title.style.marginTop = '0';
+    const desc = document.createElement('p');
+    desc.textContent = 'Copy this command, then optionally open Google Colab to run it.';
+    desc.style.color = '#aaa';
+    const textarea = document.createElement('textarea');
+    textarea.value = cmd;
+    textarea.readOnly = true;
+    textarea.style.cssText = 'width:100%;height:260px;background:#000;color:#0f0;border:1px solid #333;border-radius:8px;padding:12px;box-sizing:border-box;font-family:monospace;font-size:13px;resize:vertical;white-space:pre;';
+    const buttons = document.createElement('div');
+    buttons.style.cssText = 'display:flex;justify-content:flex-end;gap:10px;margin-top:15px;flex-wrap:wrap;';
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy Command';
+    copyBtn.style.cssText = 'background:#065fd4;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;';
+    copyBtn.onclick = async () => {
+        await copyTextToClipboard(cmd);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
     };
+    const colabBtn = document.createElement('button');
+    colabBtn.textContent = 'Go to Colab';
+    colabBtn.style.cssText = 'background:#107c10;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;';
+    colabBtn.onclick = () => window.open(COLAB_URL, '_blank');
+    const cancelBtn = document.createElement('button');
+    cancelBtn.textContent = 'Cancel';
+    cancelBtn.style.cssText = 'background:#333;color:white;border:1px solid #555;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;';
+    cancelBtn.onclick = () => modal.remove();
+    buttons.appendChild(copyBtn);
+    buttons.appendChild(colabBtn);
+    buttons.appendChild(cancelBtn);
+    box.appendChild(title);
+    box.appendChild(desc);
+    box.appendChild(textarea);
+    box.appendChild(buttons);
+    modal.appendChild(box);
+    document.body.appendChild(modal);
+    textarea.focus();
+    textarea.select();
+}
 
-    const downBtn = document.createElement("button");
-    downBtn.className = "manual-btn gray";
-    downBtn.style.padding = "5px 9px";
-    downBtn.textContent = "↓";
-    downBtn.disabled = index === manualClips.length - 1;
-    downBtn.style.opacity = index === manualClips.length - 1 ? "0.35" : "1";
+function generateYtDlpCommand() {
+    const cmd = buildYtDlpCommand(videoId, clips, montageNameParam);
+    if (cmd) showYtDlpModal(cmd);
+}
+document.getElementById('export-btn-player').onclick = generateYtDlpCommand;
+document.getElementById('export-btn-fallback').onclick = generateYtDlpCommand;
+document.getElementById('home-btn-player').onclick = () => {
+    window.location.href = HOME_URL;
+};
+document.getElementById('home-btn-fallback').onclick = () => {
+    window.location.href = HOME_URL;
+};
 
-    downBtn.onclick = () => {
-        if (index < manualClips.length - 1) {
-            const tmp = manualClips[index];
-            manualClips[index] = manualClips[index + 1];
-            manualClips[index + 1] = tmp;
-            renderManualClips();
-            manualSetMessage("Clip moved down.");
+function renderClipControls() {
+    const controlsBar = document.getElementById('clip-controls-bar'),
+        summary = document.getElementById('clip-summary'),
+        list = document.getElementById('clip-list-bar');
+    if (!controlsBar || !summary || !list) return;
+    if (!clips || clips.length === 0) {
+        controlsBar.style.display = 'none';
+        return;
+    }
+    controlsBar.style.display = 'block';
+    const total = getTotalMontageLength();
+    summary.textContent = `Total montage length: ${formatDuration(total)} • ${clips.length} clip${clips.length===1?'':'s'}`;
+    list.textContent = '';
+    clips.forEach((clip, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'clip-jump-btn';
+        if (index === currentClipIndex) btn.classList.add('active');
+        const title = document.createElement('span');
+        title.className = 'clip-jump-title';
+        title.textContent = `Clip ${index+1} • ${formatDuration(getClipDuration(clip))}`;
+        const time = document.createElement('span');
+        time.className = 'clip-jump-time';
+        time.textContent = `${formatTime(clip.start)} - ${formatTime(clip.end)}`;
+        btn.appendChild(title);
+        btn.appendChild(time);
+        btn.onclick = () => jumpToClip(index);
+        list.appendChild(btn);
+    });
+    updateClipNavButtons();
+}
+
+function updateClipNavButtons() {
+    const prevBtn = document.getElementById('prev-clip-btn'),
+        nextBtn = document.getElementById('next-clip-btn');
+    if (!prevBtn || !nextBtn) return;
+    prevBtn.disabled = currentClipIndex <= 0;
+    nextBtn.disabled = currentClipIndex >= clips.length - 1;
+    prevBtn.style.opacity = prevBtn.disabled ? '.45' : '1';
+    nextBtn.style.opacity = nextBtn.disabled ? '.45' : '1';
+}
+
+function jumpToClip(index) {
+    if (!clips || index < 0 || index >= clips.length) return;
+    currentClipIndex = index;
+    if (player && player.seekTo) {
+        player.seekTo(clips[currentClipIndex].start, true);
+        if (player.playVideo) player.playVideo();
+    }
+    statusText.innerText = `Playing clip ${currentClipIndex+1} of ${clips.length}`;
+    if (timeChecker) clearInterval(timeChecker);
+    timeChecker = setInterval(checkTime, 100);
+    renderClipControls();
+}
+
+function goToPreviousClip() {
+    if (currentClipIndex > 0) jumpToClip(currentClipIndex - 1);
+}
+
+function goToNextClip() {
+    if (currentClipIndex < clips.length - 1) jumpToClip(currentClipIndex + 1);
+}
+document.getElementById('prev-clip-btn').onclick = goToPreviousClip;
+document.getElementById('next-clip-btn').onclick = goToNextClip;
+
+function loadYouTubeAPI() {
+    if (clipsParam) {
+        clips = clipsParam.split(',').map(clip => {
+            const parts = clip.split('-');
+            return {
+                start: parseFloat(parts[0]),
+                end: parseFloat(parts[1])
+            };
+        }).filter(c => !Number.isNaN(c.start) && !Number.isNaN(c.end) && c.end > c.start);
+    }
+    renderClipControls();
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
+window.onYouTubeIframeAPIReady = function() {
+    if (clips.length === 0) {
+        statusText.innerText = 'Error: Missing clips in URL.';
+        return;
+    }
+    player = new YT.Player('player', {
+        height: '100%',
+        width: '100%',
+        videoId: videoId,
+        playerVars: {
+            playsinline: 1,
+            start: Math.floor(clips[0].start),
+            autoplay: 1,
+            controls: 1
+        },
+        events: {
+            onReady: onPlayerReady,
+            onError: onPlayerError
         }
-    };
+    });
+};
 
-    const removeBtn = document.createElement("button");
-    removeBtn.className = "manual-btn red";
-    removeBtn.style.padding = "5px 9px";
-    removeBtn.textContent = "Remove";
+function onPlayerReady(event) {
+    currentClipIndex = 0;
+    statusText.innerText = `Playing clip 1 of ${clips.length}`;
+    renderClipControls();
+    event.target.playVideo();
+    if (timeChecker) clearInterval(timeChecker);
+    timeChecker = setInterval(checkTime, 100);
+}
 
-    removeBtn.onclick = () => {
-        manualClips.splice(index, 1);
-        renderManualClips();
-        manualSetMessage("Clip removed.");
-    };
+function onPlayerError(event) {
+    if (event.data === 101 || event.data === 150) {
+        document.getElementById('player-container').style.display = 'none';
+        document.getElementById('status-bar').style.display = 'none';
+        document.getElementById('fallback-page').style.display = 'flex';
+        document.getElementById('clip-controls-bar').style.display = 'block';
+        renderClipControls();
+        const container = document.getElementById('fallback-links-container');
+        container.textContent = '';
+        clips.forEach((clip, index) => {
+            const link = document.createElement('a');
+            link.className = 'fallback-link';
+            link.target = '_blank';
+            link.href = `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(clip.start)}s`;
+            link.innerText = `▶ Play Clip ${index+1} (${formatTime(clip.start)} - ${formatTime(clip.end)})`;
+            container.appendChild(link);
+        });
+    } else statusText.innerText = `An error occurred playing this video. Code: ${event.data}`;
+}
 
-    buttons.appendChild(upBtn);
-    buttons.appendChild(downBtn);
-    buttons.appendChild(removeBtn);
-
-    row.appendChild(text);
-    row.appendChild(buttons);
-    list.appendChild(row);
-});
-        }
-
-        function initializeManualClipper() {
-            const addBtn = document.getElementById("manual-add-clip");
-            const generateBtn = document.getElementById("manual-generate-command");
-            const copyCommandBtn = document.getElementById("manual-copy-command");
-            const copyShareBtn = document.getElementById("manual-copy-share-link");
-            const openColabBtn = document.getElementById("manual-open-colab");
-            const clearBtn = document.getElementById("manual-clear-clips");
-            const output = document.getElementById("manual-output");
-
-            if (!addBtn) return;
-
-            addBtn.onclick = () => {
-                const startInput = document.getElementById("manual-start");
-                const endInput = document.getElementById("manual-end");
-
-                const start = parseManualTime(startInput.value);
-                const end = parseManualTime(endInput.value);
-
-                if (Number.isNaN(start) || Number.isNaN(end)) {
-                    manualSetMessage("Please enter valid start and end times. Example: 756.7 or 12:36.7", true);
-                    return;
-                }
-
-                if (end <= start) {
-                    manualSetMessage("End time must be after start time.", true);
-                    return;
-                }
-
-                manualClips.push({
-                    start: Math.round(start * 10) / 10,
-                    end: Math.round(end * 10) / 10
-                });
-
-                startInput.value = "";
-                endInput.value = "";
-
-                renderManualClips();
-                manualSetMessage("Clip added.");
-            };
-
-            generateBtn.onclick = () => {
-                try {
-                    const cmd = buildManualYtDlpCommand();
-                    output.value = cmd;
-                    manualSetMessage("Command generated. You can copy it or open Colab.");
-                } catch (e) {
-                    manualSetMessage(e.message, true);
-                }
-            };
-
-            copyCommandBtn.onclick = async () => {
-                try {
-                    const cmd = output.value.trim() || buildManualYtDlpCommand();
-                    output.value = cmd;
-
-                    await copyTextToClipboard(cmd);
-                    manualSetMessage("Command copied. Open Colab and paste it there.");
-                } catch (e) {
-                    manualSetMessage(e.message, true);
-                }
-            };
-
-            copyShareBtn.onclick = async () => {
-                try {
-                    const link = buildManualShareLink();
-                    await copyTextToClipboard(link);
-                    manualSetMessage("Share link copied.");
-                } catch (e) {
-                    manualSetMessage(e.message, true);
-                }
-            };
-
-            openColabBtn.onclick = () => {
-                window.open(COLAB_URL, "_blank");
-            };
-
-            clearBtn.onclick = () => {
-                manualClips = [];
-                output.value = "";
-                renderManualClips();
-                manualSetMessage("All clips cleared.");
-            };
-
-            renderManualClips();
-        }
-
-        initializeManualClipper();
-
-        if (!videoId) {
-            document.getElementById('install-page').style.display = 'flex';
+function checkTime() {
+    if (!player || !player.getCurrentTime || clips.length === 0) return;
+    const currentTime = player.getCurrentTime(),
+        currentClip = clips[currentClipIndex];
+    if (currentTime >= currentClip.end) {
+        currentClipIndex++;
+        if (currentClipIndex < clips.length) {
+            player.seekTo(clips[currentClipIndex].start, true);
+            statusText.innerText = `Playing clip ${currentClipIndex+1} of ${clips.length}`;
+            renderClipControls();
         } else {
-            document.body.style.height = '100vh';
-            document.body.style.overflow = 'hidden';
-            document.getElementById('player-container').style.display = 'block';
-            document.getElementById('status-bar').style.display = 'flex';
-            loadYouTubeAPI();
+            player.pauseVideo();
+            statusText.innerText = 'All clips finished!';
+            clearInterval(timeChecker);
+            renderClipControls();
         }
-    </script>
-</body>
+    }
+}
+
+function manualSetMessage(message, isError = false) {
+    const el = document.getElementById('manual-message');
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = isError ? '#ff6666' : '#aaa';
+}
+
+function parseYouTubeVideoId(url) {
+    try {
+        const trimmed = String(url || '').trim();
+        if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+        const parsed = new URL(trimmed);
+        const v = parsed.searchParams.get('v');
+        if (v) return v;
+        if (parsed.hostname.includes('youtu.be')) {
+            const id = parsed.pathname.split('/').filter(Boolean)[0];
+            if (id) return id;
+        }
+        const parts = parsed.pathname.split('/').filter(Boolean);
+        const shortsIndex = parts.indexOf('shorts');
+        if (shortsIndex !== -1 && parts[shortsIndex + 1]) return parts[shortsIndex + 1];
+        const embedIndex = parts.indexOf('embed');
+        if (embedIndex !== -1 && parts[embedIndex + 1]) return parts[embedIndex + 1];
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function parseManualTime(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return NaN;
+    if (/^\d+(\.\d+)?$/.test(raw)) return Math.round(parseFloat(raw) * 10) / 10;
+    const parts = raw.split(':').map(p => p.trim());
+    if (parts.length < 2 || parts.length > 3) return NaN;
+    let seconds = 0;
+    if (parts.length === 2) {
+        const minutes = parseFloat(parts[0]),
+            secs = parseFloat(parts[1]);
+        if (Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
+        seconds = minutes * 60 + secs;
+    }
+    if (parts.length === 3) {
+        const hours = parseFloat(parts[0]),
+            minutes = parseFloat(parts[1]),
+            secs = parseFloat(parts[2]);
+        if (Number.isNaN(hours) || Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
+        seconds = hours * 3600 + minutes * 60 + secs;
+    }
+    return Math.round(seconds * 10) / 10;
+}
+
+function buildManualShareLink() {
+    const urlInput = document.getElementById('manual-youtube-url').value,
+        montageName = document.getElementById('manual-montage-name').value || 'Montage',
+        manualVideoId = parseYouTubeVideoId(urlInput);
+    if (!manualVideoId) throw new Error('Please enter a valid YouTube URL or video ID.');
+    if (manualClips.length === 0) throw new Error('Please add at least one clip.');
+    const clipsString = manualClips.map(c => `${c.start}-${c.end}`).join(',');
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+    return `${baseUrl}?v=${encodeURIComponent(manualVideoId)}&m=${encodeURIComponent(montageName)}&clips=${encodeURIComponent(clipsString)}`;
+}
+
+function buildManualYtDlpCommand() {
+    const urlInput = document.getElementById('manual-youtube-url').value,
+        montageName = document.getElementById('manual-montage-name').value || 'Montage',
+        manualVideoId = parseYouTubeVideoId(urlInput);
+    if (!manualVideoId) throw new Error('Please enter a valid YouTube URL or video ID.');
+    if (manualClips.length === 0) throw new Error('Please add at least one clip.');
+    return buildYtDlpCommand(manualVideoId, manualClips, montageName);
+}
+
+function renderManualClips() {
+    const list = document.getElementById('manual-clip-list');
+    if (!list) return;
+    list.textContent = '';
+    if (manualClips.length === 0) {
+        list.textContent = 'No clips added yet.';
+        return;
+    }
+    manualClips.forEach((clip, index) => {
+        const row = document.createElement('div');
+        row.className = 'manual-clip-item';
+        const text = document.createElement('span');
+        text.textContent = `${index+1}. ${formatTime(clip.start)} - ${formatTime(clip.end)} • ${formatDuration(clip.end-clip.start)}`;
+        const buttons = document.createElement('div');
+        buttons.style.cssText = 'display:flex;gap:6px;align-items:center;';
+        const upBtn = document.createElement('button');
+        upBtn.className = 'manual-btn gray';
+        upBtn.style.padding = '5px 9px';
+        upBtn.textContent = '↑';
+        upBtn.disabled = index === 0;
+        upBtn.style.opacity = index === 0 ? '.35' : '1';
+        upBtn.onclick = () => {
+            if (index > 0) {
+                const tmp = manualClips[index];
+                manualClips[index] = manualClips[index - 1];
+                manualClips[index - 1] = tmp;
+                renderManualClips();
+                manualSetMessage('Clip moved up.');
+            }
+        };
+        const downBtn = document.createElement('button');
+        downBtn.className = 'manual-btn gray';
+        downBtn.style.padding = '5px 9px';
+        downBtn.textContent = '↓';
+        downBtn.disabled = index === manualClips.length - 1;
+        downBtn.style.opacity = index === manualClips.length - 1 ? '.35' : '1';
+        downBtn.onclick = () => {
+            if (index < manualClips.length - 1) {
+                const tmp = manualClips[index];
+                manualClips[index] = manualClips[index + 1];
+                manualClips[index + 1] = tmp;
+                renderManualClips();
+                manualSetMessage('Clip moved down.');
+            }
+        };
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'manual-btn red';
+        removeBtn.style.padding = '5px 9px';
+        removeBtn.textContent = 'Remove';
+        removeBtn.onclick = () => {
+            manualClips.splice(index, 1);
+            renderManualClips();
+            manualSetMessage('Clip removed.');
+        };
+        buttons.appendChild(upBtn);
+        buttons.appendChild(downBtn);
+        buttons.appendChild(removeBtn);
+        row.appendChild(text);
+        row.appendChild(buttons);
+        list.appendChild(row);
+    });
+}
+
+function initializeManualClipper() {
+    const addBtn = document.getElementById('manual-add-clip'),
+        generateBtn = document.getElementById('manual-generate-command'),
+        copyCommandBtn = document.getElementById('manual-copy-command'),
+        copyShareBtn = document.getElementById('manual-copy-share-link'),
+        openShareBtn = document.getElementById('manual-open-share-link'),
+        openColabBtn = document.getElementById('manual-open-colab'),
+        clearBtn = document.getElementById('manual-clear-clips'),
+        output = document.getElementById('manual-output');
+    if (!addBtn) return;
+    addBtn.onclick = () => {
+        const startInput = document.getElementById('manual-start'),
+            endInput = document.getElementById('manual-end'),
+            start = parseManualTime(startInput.value),
+            end = parseManualTime(endInput.value);
+        if (Number.isNaN(start) || Number.isNaN(end)) {
+            manualSetMessage('Please enter valid start and end times. Example: 756.7 or 12:36.7', true);
+            return;
+        }
+        if (end <= start) {
+            manualSetMessage('End time must be after start time.', true);
+            return;
+        }
+        manualClips.push({
+            start: Math.round(start * 10) / 10,
+            end: Math.round(end * 10) / 10
+        });
+        startInput.value = '';
+        endInput.value = '';
+        renderManualClips();
+        manualSetMessage('Clip added.');
+    };
+    generateBtn.onclick = () => {
+        try {
+            const cmd = buildManualYtDlpCommand();
+            output.value = cmd;
+            manualSetMessage('Command generated. You can copy it or open Colab.');
+        } catch (e) {
+            manualSetMessage(e.message, true);
+        }
+    };
+    copyCommandBtn.onclick = async () => {
+        try {
+            const cmd = output.value.trim() || buildManualYtDlpCommand();
+            output.value = cmd;
+            await copyTextToClipboard(cmd);
+            manualSetMessage('Command copied. Open Colab and paste it there.');
+        } catch (e) {
+            manualSetMessage(e.message, true);
+        }
+    };
+    copyShareBtn.onclick = async () => {
+        try {
+            const link = buildManualShareLink();
+            await copyTextToClipboard(link);
+            manualSetMessage('Share link copied.');
+        } catch (e) {
+            manualSetMessage(e.message, true);
+        }
+    };
+    openShareBtn.onclick = () => {
+        try {
+            window.open(buildManualShareLink(), '_blank');
+            manualSetMessage('Share link opened in a new tab.');
+        } catch (e) {
+            manualSetMessage(e.message, true);
+        }
+    };
+    openColabBtn.onclick = () => window.open(COLAB_URL, '_blank');
+    clearBtn.onclick = () => {
+        manualClips = [];
+        output.value = '';
+        renderManualClips();
+        manualSetMessage('All clips cleared.');
+    };
+    renderManualClips();
+}
+initializeManualClipper();
+if (!videoId) {
+    document.getElementById('install-page').style.display = 'flex';
+} else {
+    document.body.style.height = '100vh';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('player-container').style.display = 'block';
+    document.getElementById('status-bar').style.display = 'flex';
+    loadYouTubeAPI();
+}
+  </script>
+ </body>
 </html>
