@@ -17,3 +17,6 @@ Because GitHub blocks direct bookmarklet links in README files, you can install 
 5. When you are done, click **Generate Share Link**.
 6. Copy the generated URL and send it to your friends! When they open it, it will automatically skip through the video, playing only your selected clips.
 7. Optionally, change your "montage" to create a different selection of clips for a video. Change the order of the clips to make non-destructive montages of your favorite videos to share with friends.
+
+
+Mobile chuds can manually enter their timestamps in the website and do it that way.

@@ -638,11 +638,29 @@ u.appendChild(mk('h4','','margin:0 0 5px 0;font-size:13px;color:#aaa;','Clips in
 const cL=mk('div','','font-size:12px;max-height:140px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
 u.appendChild(cL);
 
-const bSh=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;','Generate Share Link');
+const shareRow=mk('div','','display:flex;gap:5px;margin-bottom:5px;');
+
+const bCopySh=mk(
+    'button',
+    '',
+    'flex:1;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;',
+    'Copy Share Link'
+);
+
+const bOpenSh=mk(
+    'button',
+    '',
+    'flex:1;padding:6px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;',
+    'Open Share Link'
+);
+
+shareRow.appendChild(bCopySh);
+shareRow.appendChild(bOpenSh);
+
 const bYt=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;','Export yt-dlp Cmd');
 const bC=mk('button','','width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;','Close');
 
-u.appendChild(bSh);
+u.appendChild(shareRow);
 u.appendChild(bYt);
 u.appendChild(bC);
 document.body.appendChild(u);
@@ -741,17 +759,34 @@ bV.onclick=()=>{
     }
 };
 
-bSh.onclick=async()=>{
+const getShareLink=()=>{
     let {vD}=getData();
     let clips=vD.montages[actM];
 
-    if(!clips||clips.length===0)return alert('No clips in this montage.');
+    if(!clips||clips.length===0){
+        alert('No clips in this montage.');
+        return null;
+    }
 
     let cS=clips.map(c=>`${c.start}-${c.end}`).join(',');
-    let link=`${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${encodeURIComponent(cS)}`;
+    return `${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${encodeURIComponent(cS)}`;
+};
+
+bCopySh.onclick=async()=>{
+    let link=getShareLink();
+    if(!link)return;
 
     await copyText(link);
-    prompt('Share link copied. You can also copy it here:',link);
+
+    bCopySh.textContent='Copied!';
+    setTimeout(()=>bCopySh.textContent='Copy Share Link',1200);
+};
+
+bOpenSh.onclick=()=>{
+    let link=getShareLink();
+    if(!link)return;
+
+    window.open(link,'_blank');
 };
 
 bYt.onclick=()=>{
