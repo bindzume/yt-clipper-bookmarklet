@@ -460,6 +460,54 @@
     }
 
 }
+
+@media (max-width: 640px) {
+    body.mobile-player-page {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    body.mobile-player-page #player-container {
+        flex: 0 0 45vh;
+        height: 45vh;
+        min-height: 240px;
+        max-height: 420px;
+    }
+
+    body.mobile-player-page #player {
+        width: 100%;
+        height: 100%;
+    }
+
+    body.mobile-player-page #status-bar {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+    }
+
+    body.mobile-player-page #clip-controls-bar {
+        display: block;
+        max-height: none;
+        overflow: visible;
+        padding-bottom: 24px;
+    }
+
+    body.mobile-player-page #clip-list-bar {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-x: visible;
+        overflow-y: visible;
+    }
+
+    body.mobile-player-page .clip-jump-btn {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+}
   </style>
  </head>
  <body>
@@ -1692,13 +1740,25 @@ function initializeManualClipper() {
     renderManualClips();
 }
 initializeManualClipper();
-if (!videoId) {
-    document.getElementById('install-page').style.display = 'flex';
-} else {
-    document.body.style.height = '100vh';
-    document.body.style.overflow = 'hidden';
-    document.getElementById('player-container').style.display = 'block';
-    document.getElementById('status-bar').style.display = 'flex';
+if(!videoId){
+    document.getElementById('install-page').style.display='flex';
+}else{
+    const isMobilePlayer = window.matchMedia('(max-width: 640px)').matches;
+
+    if(isMobilePlayer){
+        document.body.classList.add('mobile-player-page');
+        document.body.style.height='auto';
+        document.body.style.minHeight='100vh';
+        document.body.style.overflowY='auto';
+        document.body.style.overflowX='hidden';
+    }else{
+        document.body.style.height='100vh';
+        document.body.style.overflow='hidden';
+    }
+
+    document.getElementById('player-container').style.display='block';
+    document.getElementById('status-bar').style.display='flex';
+
     loadYouTubeAPI();
 }
   </script>
