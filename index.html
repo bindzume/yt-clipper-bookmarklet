@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YT Clipper</title>
+
     <style>
         body {
             margin: 0;
@@ -13,8 +14,8 @@
             font-family: "YouTube Sans", Roboto, Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         #install-page {
@@ -22,10 +23,11 @@
             flex: 1;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         #install-page h1 {
@@ -36,8 +38,8 @@
         #install-page p.subtitle {
             font-size: 18px;
             color: #aaa;
-            max-width: 500px;
-            margin-bottom: 40px;
+            max-width: 560px;
+            margin-bottom: 35px;
         }
 
         .drag-instruction {
@@ -73,11 +75,12 @@
         }
 
         .help-text {
-            margin-top: 50px;
+            margin-top: 35px;
             font-size: 14px !important;
             color: #606060 !important;
             border-top: 1px solid #2a2a2a;
             padding-top: 20px;
+            max-width: 760px;
         }
 
         .kbd {
@@ -90,7 +93,7 @@
         }
 
         .github-link {
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 14px;
         }
 
@@ -110,6 +113,12 @@
             width: 100%;
             flex: 1;
             background: black;
+            min-height: 0;
+        }
+
+        #player {
+            width: 100%;
+            height: 100%;
         }
 
         #status-bar {
@@ -124,6 +133,7 @@
             box-sizing: border-box;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
         }
 
         .export-btn {
@@ -135,6 +145,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
+            white-space: nowrap;
         }
 
         .export-btn:hover {
@@ -165,13 +176,173 @@
             max-width: 400px;
             border: 1px solid #444;
             transition: background 0.2s;
+            box-sizing: border-box;
         }
 
         .fallback-link:hover {
             background: #333;
         }
+
+        .manual-clipper {
+            margin-top: 35px;
+            width: 100%;
+            max-width: 760px;
+            background: #181818;
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        .manual-clipper h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .manual-clipper label {
+            display: block;
+            color: #ccc;
+            font-size: 13px;
+            margin-bottom: 6px;
+            margin-top: 12px;
+        }
+
+        .manual-clipper input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #0f0f0f;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 15px;
+        }
+
+        .manual-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 8px;
+            align-items: end;
+            margin-top: 10px;
+        }
+
+        .manual-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .manual-btn {
+            background: #065fd4;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .manual-btn.green {
+            background: #107c10;
+        }
+
+        .manual-btn.gray {
+            background: #333;
+        }
+
+        .manual-btn.red {
+            background: #cc0000;
+        }
+
+        .manual-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .manual-clip-list {
+            background: #0f0f0f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 12px;
+            min-height: 44px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .manual-clip-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2a2a2a;
+            padding: 8px 0;
+        }
+
+        .manual-clip-item:last-child {
+            border-bottom: none;
+        }
+
+        .manual-output {
+            width: 100%;
+            min-height: 190px;
+            margin-top: 12px;
+            background: #000;
+            color: #00ff66;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            box-sizing: border-box;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre;
+        }
+
+        .manual-message {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        @media (max-width: 640px) {
+            #install-page {
+                padding-top: 25px;
+            }
+
+            #install-page h1 {
+                font-size: 36px;
+            }
+
+            .bookmarklet-btn {
+                font-size: 17px;
+                padding: 14px 24px;
+            }
+
+            .manual-row {
+                grid-template-columns: 1fr;
+            }
+
+            .manual-actions {
+                flex-direction: column;
+            }
+
+            .manual-btn {
+                width: 100%;
+            }
+
+            #status-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .export-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div id="player-container">
@@ -196,22 +367,90 @@
 
     <div id="install-page">
         <h1>✂️ YT Clipper</h1>
-        <p class="subtitle">A simple bookmarklet to clip and share segments of YouTube videos.</p>
+        <p class="subtitle">
+            Clip YouTube videos on desktop with a bookmarklet, or use the mobile-friendly manual clipper below.
+        </p>
 
-        <div class="drag-instruction">👇 Drag this button to your Bookmarks Bar 👇</div>
+        <div class="drag-instruction">👇 Desktop: Drag this button to your Bookmarks Bar 👇</div>
 
-        <a class="bookmarklet-btn" title="YT Clipper" id="bookmarklet-link" href="#">
+        <a
+            id="bookmarklet-link"
+            class="bookmarklet-btn"
+            title="YT Clipper"
+            href="#"
+        >
             YT Clipper
         </a>
 
         <div class="help-text">
             <p>
                 Don't see your bookmarks bar?
-                Try <span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span>
+                Try <span class="kbd">Ctrl</span> + <span class="kbd">Shift</span> + <span class="kbd">B</span>
                 on Windows or
-                <span class="kbd">Cmd</span>+<span class="kbd">Shift</span>+<span class="kbd">B</span>
+                <span class="kbd">Cmd</span> + <span class="kbd">Shift</span> + <span class="kbd">B</span>
                 on Mac.
             </p>
+            <p>
+                On mobile, use the manual clipper below instead of the bookmarklet.
+            </p>
+        </div>
+
+        <div class="manual-clipper" id="manual-clipper">
+            <h2>📱 Manual Clipper</h2>
+
+            <p style="color:#aaa;text-align:center;margin-top:-5px;">
+                Mobile-friendly mode. Paste a YouTube link, enter timestamps, then copy the export command.
+            </p>
+
+            <label for="manual-youtube-url">YouTube URL or Video ID</label>
+            <input
+                id="manual-youtube-url"
+                type="text"
+                placeholder="https://www.youtube.com/watch?v=qVnRV53Ea50"
+            >
+
+            <label for="manual-montage-name">Montage Name</label>
+            <input
+                id="manual-montage-name"
+                type="text"
+                placeholder="Montage"
+                value="Montage"
+            >
+
+            <div class="manual-row">
+                <div>
+                    <label for="manual-start">Start Time</label>
+                    <input id="manual-start" type="text" placeholder="756.7 or 12:36.7">
+                </div>
+
+                <div>
+                    <label for="manual-end">End Time</label>
+                    <input id="manual-end" type="text" placeholder="798.7 or 13:18.7">
+                </div>
+
+                <button class="manual-btn green" id="manual-add-clip">Add Clip</button>
+            </div>
+
+            <div class="manual-clip-list" id="manual-clip-list">
+                No clips added yet.
+            </div>
+
+            <div class="manual-actions">
+                <button class="manual-btn" id="manual-generate-command">Generate Command</button>
+                <button class="manual-btn green" id="manual-copy-command">Copy Command</button>
+                <button class="manual-btn gray" id="manual-copy-share-link">Copy Share Link</button>
+                <button class="manual-btn gray" id="manual-open-colab">Open Colab</button>
+                <button class="manual-btn red" id="manual-clear-clips">Clear Clips</button>
+            </div>
+
+            <textarea
+                class="manual-output"
+                id="manual-output"
+                readonly
+                placeholder="Your generated yt-dlp command will appear here..."
+            ></textarea>
+
+            <div class="manual-message" id="manual-message"></div>
         </div>
 
         <div class="github-link">
@@ -225,56 +464,118 @@
 (function(){
 if(document.getElementById('yt-clipper-ui'))return;
 
-for(let i=0;i<localStorage.length;i++){
-    let k=localStorage.key(i);
-    if(k&&k.startsWith('yt-clips-')){
-        let v=k.replace('yt-clips-','');
-        let c=JSON.parse(localStorage.getItem(k));
-        let l=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-        if(!l[v]){
-            l[v]={title:'Video '+v,montages:{'Default':c}};
-            localStorage.setItem('yt-clipper-library',JSON.stringify(l));
-        }
-        localStorage.removeItem(k);
-    }
-}
-
 const B='https://bindzume.github.io/yt-clipper-bookmarklet/';
-let t=null,n=null;
-const d=new URLSearchParams(window.location.search).get('v');
-const vEl=document.querySelector('video');
+const COLAB_URL='https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb';
+
+let t=null;
+let n=null;
 let actM='Default';
 
-const mk=(t,i,c,x)=>{
-    let e=document.createElement(t);
-    if(i)e.id=i;
-    if(c)e.style.cssText=c;
-    if(x)e.textContent=x;
+const d=new URLSearchParams(window.location.search).get('v');
+const vEl=document.querySelector('video');
+
+const mk=(tag,id,css,text)=>{
+    let e=document.createElement(tag);
+    if(id)e.id=id;
+    if(css)e.style.cssText=css;
+    if(text!==undefined)e.textContent=text;
     return e;
 };
 
 const fT=s=>{
-    if(s===null)return'--';
+    if(s===null||s===undefined)return'--';
     let m=Math.floor(s/60);
     let S=Math.floor(s%60).toString().padStart(2,'0');
-    return `${m}:${S}`;
+    let dec=Math.round((s%1)*10);
+    return dec?`${m}:${S}.${dec}`:`${m}:${S}`;
 };
 
-const safeFileName=name=>{
-    return String(name||'Montage')
-        .trim()
-        .replace(/[^a-z0-9_-]+/gi,'_')
-        .replace(/^_+|_+$/g,'')||'Montage';
+const safeName=name=>{
+    return String(name||'Montage').trim().replace(/[^a-z0-9_-]+/gi,'_').replace(/^_+|_+$/g,'')||'Montage';
 };
-const showCmdModal=(cmd)=>{
+
+const getLib=()=>{
+    return JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
+};
+
+const saveLib=lib=>{
+    localStorage.setItem('yt-clipper-library',JSON.stringify(lib));
+};
+
+const getData=()=>{
+    let lib=getLib();
+    let vD=lib[d];
+
+    if(!vD){
+        vD={
+            title:document.title.replace(' - YouTube',''),
+            montages:{Default:[]}
+        };
+    }
+
+    if(vD.clips){
+        vD.montages={Default:vD.clips};
+        delete vD.clips;
+    }
+
+    if(!vD.montages)vD.montages={Default:[]};
+
+    if(!vD.montages[actM]){
+        let keys=Object.keys(vD.montages);
+        actM=keys.length?keys[0]:'Default';
+    }
+
+    if(!vD.montages[actM])vD.montages[actM]=[];
+
+    lib[d]=vD;
+    saveLib(lib);
+
+    return {lib,vD};
+};
+
+const saveData=(lib,vD)=>{
+    lib[d]=vD;
+    saveLib(lib);
+};
+
+const buildCmd=(clips,mName,vid)=>{
+    let out=`YT_${safeName(mName)}_${vid}.mp4`;
+    let sectionLines=clips.map(c=>`  --download-sections "*${c.start}-${c.end}" \\`).join('\n');
+
+    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
+${sectionLines}
+  --force-keyframes-at-cuts \\
+  --merge-output-format mp4 \\
+  "https://www.youtube.com/watch?v=${vid}" \\
+  -o "part_%(autonumber)02d.%(ext)s" \\
+  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
+  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${out}" \\
+  && rm part_*.mp4 inputs.txt`;
+};
+
+const copyText=async text=>{
+    try{
+        await navigator.clipboard.writeText(text);
+    }catch(e){
+        let ta=document.createElement('textarea');
+        ta.value=text;
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+    }
+};
+
+const showCmdModal=cmd=>{
     let old=document.getElementById('yt-dlp-modal');
     if(old)old.remove();
 
     let modal=mk('div','yt-dlp-modal','position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999999;display:flex;align-items:center;justify-content:center;font-family:sans-serif;');
-    let box=mk('div','','width:90%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.8);');
+    let box=mk('div','','width:90%;max-width:760px;background:#111;color:white;border:1px solid #444;border-radius:12px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.8);box-sizing:border-box;');
 
     box.appendChild(mk('h2','','margin-top:0;','Export yt-dlp Command'));
-    box.appendChild(mk('p','','color:#aaa;','Copy this command, or open Google Colab to run it.'));
+    box.appendChild(mk('p','','color:#aaa;','Copy this command, then optionally open Google Colab to run it.'));
 
     let ta=mk('textarea','','width:100%;height:260px;background:#000;color:#0f0;border:1px solid #333;border-radius:8px;padding:12px;box-sizing:border-box;font-family:monospace;font-size:13px;resize:vertical;white-space:pre;');
     ta.value=cmd;
@@ -284,23 +585,14 @@ const showCmdModal=(cmd)=>{
 
     let copy=mk('button','','background:#065fd4;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Copy Command');
     copy.onclick=async()=>{
-        try{
-            await navigator.clipboard.writeText(cmd);
-            copy.textContent='Copied!';
-            setTimeout(()=>copy.textContent='Copy Command',1200);
-        }catch(e){
-            ta.focus();
-            ta.select();
-            document.execCommand('copy');
-            copy.textContent='Copied!';
-            setTimeout(()=>copy.textContent='Copy Command',1200);
-        }
+        await copyText(cmd);
+        copy.textContent='Copied!';
+        setTimeout(()=>copy.textContent='Copy Command',1200);
     };
 
     let colab=mk('button','','background:#107c10;color:white;border:none;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Go to Colab');
     colab.onclick=()=>{
-        window.open('https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb','_blank');
-        modal.remove();
+        window.open(COLAB_URL,'_blank');
     };
 
     let cancel=mk('button','','background:#333;color:white;border:1px solid #555;padding:10px 14px;border-radius:6px;cursor:pointer;font-weight:bold;','Cancel');
@@ -319,74 +611,17 @@ const showCmdModal=(cmd)=>{
     ta.select();
 };
 
-
-const buildCmd=(clips,mName,vid)=>{
-    let out=`YT_${safeFileName(mName)}_${vid}.mp4`;
-
-    let sectionLines=clips
-        .map(c=>`  --download-sections "*${c.start}-${c.end}" \\`)
-        .join('\n');
-
-    return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
-${sectionLines}
-  --force-keyframes-at-cuts \\
-  "https://www.youtube.com/watch?v=${vid}" \\
-  -o "part_%(autonumber)02d.%(ext)s" \\
-  && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
-  && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${out}" \\
-  && rm part_*.mp4 inputs.txt`;
-};
-
-const gD=()=>{
-    let l=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-    let vD=l[d];
-
-    if(vD&&vD.clips){
-        vD.montages={'Default':vD.clips};
-        delete vD.clips;
-        l[d]=vD;
-        localStorage.setItem('yt-clipper-library',JSON.stringify(l));
-    }
-
-    if(!vD){
-        vD={
-            title:document.title.replace(' - YouTube',''),
-            montages:{'Default':[]}
-        };
-    }
-
-    if(!vD.montages)vD.montages={'Default':[]};
-
-    if(!vD.montages[actM]){
-        let keys=Object.keys(vD.montages);
-        actM=keys.length?keys[0]:'Default';
-    }
-
-    if(!vD.montages[actM])vD.montages[actM]=[];
-
-    return{l,vD};
-};
-
-const sD=(l,vD)=>{
-    l[d]=vD;
-    localStorage.setItem('yt-clipper-library',JSON.stringify(l));
-};
-
-const u=mk(
-    'div',
-    'yt-clipper-ui',
-    'position:fixed;top:60px;right:20px;background:rgba(0,0,0,0.95);color:white;padding:15px;z-index:999999;border-radius:8px;font-family:sans-serif;width:260px;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid #333;'
-);
+const u=mk('div','yt-clipper-ui','position:fixed;top:60px;right:20px;background:rgba(0,0,0,0.95);color:white;padding:15px;z-index:999999;border-radius:8px;font-family:sans-serif;width:270px;box-shadow:0 4px 10px rgba(0,0,0,0.5);border:1px solid #333;box-sizing:border-box;');
 
 u.appendChild(mk('h3','','margin-top:0;border-bottom:1px solid #555;padding-bottom:5px;','✂️ YT Clipper'));
 
-const mRow=mk('div','','display:flex;gap:5px;margin-bottom:10px;align-items:center;');
-const mSel=mk('select','','flex:1;background:#222;color:white;border:1px solid #444;padding:4px;border-radius:4px;');
-const mAdd=mk('button','','background:#065fd4;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;','+');
+const montageRow=mk('div','','display:flex;gap:5px;margin-bottom:10px;align-items:center;');
+const montageSelect=mk('select','','flex:1;background:#222;color:white;border:1px solid #444;padding:4px;border-radius:4px;');
+const montageAdd=mk('button','','background:#065fd4;color:white;border:none;border-radius:4px;padding:4px 8px;cursor:pointer;','+');
 
-mRow.appendChild(mSel);
-mRow.appendChild(mAdd);
-u.appendChild(mRow);
+montageRow.appendChild(montageSelect);
+montageRow.appendChild(montageAdd);
+u.appendChild(montageRow);
 
 const bS=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark Start');
 const bE=mk('button','','width:100%;margin-bottom:5px;padding:6px;border-radius:4px;border:none;cursor:pointer;','Mark End');
@@ -400,35 +635,37 @@ u.appendChild(bV);
 
 u.appendChild(mk('h4','','margin:0 0 5px 0;font-size:13px;color:#aaa;','Clips in Montage'));
 
-const cL=mk('div','','font-size:12px;max-height:120px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
+const cL=mk('div','','font-size:12px;max-height:140px;overflow-y:auto;background:#222;padding:5px;border-radius:4px;margin-bottom:10px;');
 u.appendChild(cL);
 
 const bSh=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;','Generate Share Link');
 const bYt=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;','Export yt-dlp Cmd');
-const bD=mk('button','','width:100%;margin-bottom:10px;padding:6px;background:#673ab7;color:white;border:none;border-radius:4px;cursor:pointer;','Open Dashboard');
 const bC=mk('button','','width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;','Close');
 
 u.appendChild(bSh);
 u.appendChild(bYt);
-u.appendChild(bD);
 u.appendChild(bC);
 document.body.appendChild(u);
 
-const rdr=()=>{
+const updateStartEnd=()=>{
+    sT.textContent=`Start: ${fT(t)} | End: ${fT(n)}`;
+};
+
+const render=()=>{
     if(!d){
         cL.textContent='';
-        cL.appendChild(mk('span','','color:#ff5555','Not a video page.'));
+        cL.appendChild(mk('span','','color:#ff5555','Not a YouTube video page.'));
         return;
     }
 
-    let{l,vD}=gD();
-    mSel.textContent='';
+    let {lib,vD}=getData();
 
-    Object.keys(vD.montages).forEach(k=>{
-        let opt=mk('option','','',k);
-        opt.value=k;
-        if(k===actM)opt.selected=true;
-        mSel.appendChild(opt);
+    montageSelect.textContent='';
+    Object.keys(vD.montages).forEach(name=>{
+        let opt=mk('option','','',name);
+        opt.value=name;
+        if(name===actM)opt.selected=true;
+        montageSelect.appendChild(opt);
     });
 
     cL.textContent='';
@@ -436,119 +673,89 @@ const rdr=()=>{
 
     if(!clips||clips.length===0){
         cL.appendChild(mk('i','','','No clips yet.'));
-    }else{
-        clips.forEach((c,i)=>{
-            let r=mk('div','','display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;');
-            let txt=mk('span','','flex:1;',`${i+1}. ${fT(c.start)}-${fT(c.end)}`);
-            let btnGrp=mk('div','','display:flex;gap:2px;');
-
-            let btnUp=mk('button','','background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','↑');
-            let btnDn=mk('button','','background:#444;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','↓');
-            let btnDel=mk('button','','background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','X');
-
-            btnUp.onclick=()=>{
-                if(i>0){
-                    let tmp=clips[i];
-                    clips[i]=clips[i-1];
-                    clips[i-1]=tmp;
-                    sD(l,vD);
-                    rdr();
-                }
-            };
-
-            btnDn.onclick=()=>{
-                if(i<clips.length-1){
-                    let tmp=clips[i];
-                    clips[i]=clips[i+1];
-                    clips[i+1]=tmp;
-                    sD(l,vD);
-                    rdr();
-                }
-            };
-
-            btnDel.onclick=()=>{
-                if(confirm('Remove clip?')){
-                    clips.splice(i,1);
-                    sD(l,vD);
-                    rdr();
-                }
-            };
-
-            btnGrp.appendChild(btnUp);
-            btnGrp.appendChild(btnDn);
-            btnGrp.appendChild(btnDel);
-            r.appendChild(txt);
-            r.appendChild(btnGrp);
-            cL.appendChild(r);
-        });
+        return;
     }
+
+    clips.forEach((c,i)=>{
+        let row=mk('div','','display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;border-bottom:1px solid #444;padding-bottom:2px;gap:4px;');
+        let txt=mk('span','','flex:1;',`${i+1}. ${fT(c.start)}-${fT(c.end)}`);
+
+        let del=mk('button','','background:#cc0000;color:white;border:none;cursor:pointer;padding:2px 6px;font-size:10px;','X');
+        del.onclick=()=>{
+            if(confirm('Remove clip?')){
+                clips.splice(i,1);
+                saveData(lib,vD);
+                render();
+            }
+        };
+
+        row.appendChild(txt);
+        row.appendChild(del);
+        cL.appendChild(row);
+    });
 };
 
-const uS=()=>{
-    sT.textContent=`Start: ${fT(t)} | End: ${fT(n)}`;
-};
-
-mSel.onchange=e=>{
+montageSelect.onchange=e=>{
     actM=e.target.value;
-    rdr();
+    render();
 };
 
-mAdd.onclick=()=>{
+montageAdd.onclick=()=>{
     let nm=prompt('New Montage Name:');
     if(nm&&nm.trim()){
-        let{l,vD}=gD();
+        let {lib,vD}=getData();
         if(!vD.montages[nm]){
             vD.montages[nm]=[];
             actM=nm;
-            sD(l,vD);
-            rdr();
+            saveData(lib,vD);
+            render();
         }
     }
 };
 
 bS.onclick=()=>{
     if(vEl){
-        t=vEl.currentTime;
-        uS();
+        t=Math.round(vEl.currentTime*10)/10;
+        updateStartEnd();
     }
 };
 
 bE.onclick=()=>{
     if(vEl){
-        n=vEl.currentTime;
-        uS();
+        n=Math.round(vEl.currentTime*10)/10;
+        updateStartEnd();
     }
 };
 
 bV.onclick=()=>{
     if(t!==null&&n!==null&&n>t&&d){
-        let{l,vD}=gD();
-        vD.montages[actM].push({
-            start:Math.round(t*10)/10,
-            end:Math.round(n*10)/10
-        });
-        sD(l,vD);
+        let {lib,vD}=getData();
+        vD.montages[actM].push({start:t,end:n});
+        saveData(lib,vD);
         t=null;
         n=null;
-        uS();
-        rdr();
+        updateStartEnd();
+        render();
     }else{
         alert('Valid start/end time required.');
     }
 };
 
-bSh.onclick=()=>{
-    let{vD}=gD();
+bSh.onclick=async()=>{
+    let {vD}=getData();
     let clips=vD.montages[actM];
 
     if(!clips||clips.length===0)return alert('No clips in this montage.');
 
     let cS=clips.map(c=>`${c.start}-${c.end}`).join(',');
-    prompt('Copy your link:',`${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${cS}`);
+    let link=`${B}?v=${d}&m=${encodeURIComponent(actM)}&clips=${encodeURIComponent(cS)}`;
+
+    await copyText(link);
+    prompt('Share link copied. You can also copy it here:',link);
 };
 
 bYt.onclick=()=>{
-    let{vD}=gD();
+    let {vD}=getData();
     let clips=vD.montages[actM];
 
     if(!clips||clips.length===0)return alert('No clips to export.');
@@ -557,166 +764,19 @@ bYt.onclick=()=>{
 };
 
 bC.onclick=()=>{
-    document.body.removeChild(u);
-    let D=document.getElementById('yt-clipper-dash');
-    if(D)document.body.removeChild(D);
+    u.remove();
+    let modal=document.getElementById('yt-dlp-modal');
+    if(modal)modal.remove();
 };
 
-bD.onclick=()=>{
-    if(document.getElementById('yt-clipper-dash'))return;
-
-    let D=mk(
-        'div',
-        'yt-clipper-dash',
-        'position:fixed;top:5%;left:50%;transform:translateX(-50%);width:90%;max-width:800px;height:90%;background:#111;color:white;z-index:999999;border-radius:12px;padding:20px;box-sizing:border-box;font-family:sans-serif;box-shadow:0 10px 50px rgba(0,0,0,0.9);display:flex;flex-direction:column;border:1px solid #444;'
-    );
-
-    let H=mk('div','','display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;padding-bottom:15px;margin-bottom:15px;');
-    H.appendChild(mk('h2','','margin:0;','📚 Clip Dashboard'));
-
-    let cD=mk('button','','background:none;color:#aaa;border:none;font-size:28px;cursor:pointer;','×');
-    cD.onclick=()=>document.body.removeChild(D);
-
-    H.appendChild(cD);
-    D.appendChild(H);
-
-    let T=mk('div','','margin-bottom:15px;display:flex;gap:10px;');
-    let bEx=mk('button','','padding:8px 15px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','⬇️ Export JSON');
-    let bIm=mk('button','','padding:8px 15px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;','⬆️ Import JSON');
-
-    T.appendChild(bEx);
-    T.appendChild(bIm);
-    D.appendChild(T);
-
-    let L=mk('div','','flex:1;overflow-y:auto;background:#1a1a1a;border-radius:8px;padding:15px;');
-    D.appendChild(L);
-
-    const rL=()=>{
-        L.textContent='';
-        let lib=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-        let K=Object.keys(lib);
-
-        if(K.length===0){
-            L.appendChild(mk('div','','padding:30px;text-align:center;color:#666;','No saved clips yet.'));
-            return;
-        }
-
-        K.forEach(v=>{
-            let V=lib[v];
-
-            if(V.clips){
-                V.montages={'Default':V.clips};
-                delete V.clips;
-                lib[v]=V;
-                localStorage.setItem('yt-clipper-library',JSON.stringify(lib));
-            }
-
-            if(!V.montages)return;
-
-            let hasClips=false;
-            Object.keys(V.montages).forEach(mN=>{
-                if(V.montages[mN]&&V.montages[mN].length>0)hasClips=true;
-            });
-
-            if(!hasClips)return;
-
-            let C=mk('div','','background:#2a2a2a;margin-bottom:15px;padding:15px;border-radius:8px;border:1px solid #333;');
-            C.appendChild(mk('div','','font-weight:bold;font-size:16px;margin-bottom:10px;',V.title||`Video ID: ${v}`));
-
-            Object.keys(V.montages).forEach(mName=>{
-                let mClips=V.montages[mName];
-                if(!mClips||mClips.length===0)return;
-
-                let mRow=mk('div','','display:flex;justify-content:space-between;align-items:center;background:#111;padding:10px;border-radius:6px;margin-bottom:5px;');
-                let iCol=mk('div','','flex:1;');
-
-                iCol.appendChild(mk('div','','font-weight:bold;font-size:14px;color:#3ea6ff;',mName));
-                iCol.appendChild(mk('div','','color:#aaa;font-size:12px;',`${mClips.length} clip(s)`));
-
-                let aCol=mk('div','','display:flex;gap:10px;align-items:center;');
-
-                let P=mk('a','','padding:6px 12px;background:#fff;color:#000;text-decoration:none;border-radius:20px;font-weight:bold;font-size:12px;white-space:nowrap;','▶ Play');
-                P.href=`${B}?v=${v}&m=${encodeURIComponent(mName)}&clips=${mClips.map(c=>`${c.start}-${c.end}`).join(',')}`;
-                P.target='_blank';
-
-                let eM=mk('button','','padding:6px 10px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;','Export');
-                eM.onclick=()=>prompt('Copy this command:',buildCmd(mClips,mName,v));
-
-                let dM=mk('button','','padding:6px 10px;background:transparent;color:#cc0000;border:1px solid #cc0000;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;','Delete');
-                dM.onclick=()=>{
-                    if(confirm(`Delete montage '${mName}'?`)){
-                        let ll=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-                        delete ll[v].montages[mName];
-                        if(Object.keys(ll[v].montages).length===0)delete ll[v];
-                        localStorage.setItem('yt-clipper-library',JSON.stringify(ll));
-                        rL();
-                        rdr();
-                    }
-                };
-
-                aCol.appendChild(P);
-                aCol.appendChild(eM);
-                aCol.appendChild(dM);
-
-                mRow.appendChild(iCol);
-                mRow.appendChild(aCol);
-                C.appendChild(mRow);
-            });
-
-            L.appendChild(C);
-        });
-    };
-
-    bEx.onclick=()=>{
-        let a=document.createElement('a');
-        a.href='data:text/json;charset=utf-8,'+encodeURIComponent(
-            JSON.stringify(JSON.parse(localStorage.getItem('yt-clipper-library')||'{}'),null,2)
-        );
-        a.download='yt-clipper-backup.json';
-        a.click();
-    };
-
-    bIm.onclick=()=>{
-        let i=document.createElement('input');
-        i.type='file';
-        i.accept='.json';
-
-        i.onchange=e=>{
-            let f=e.target.files[0];
-            if(!f)return;
-
-            let r=new FileReader();
-
-            r.onload=ev=>{
-                try{
-                    let M=JSON.parse(ev.target.result);
-                    let cl=JSON.parse(localStorage.getItem('yt-clipper-library')||'{}');
-                    localStorage.setItem('yt-clipper-library',JSON.stringify({...cl,...M}));
-                    rL();
-                    rdr();
-                    alert('Import successful!');
-                }catch(e){
-                    alert('Invalid JSON file.');
-                }
-            };
-
-            r.readAsText(f);
-        };
-
-        i.click();
-    };
-
-    rL();
-    document.body.appendChild(D);
-};
-
-rdr();
+render();
 })();
     </script>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
+        const COLAB_URL = "https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb";
 
+        const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('v');
         const clipsParam = urlParams.get('clips');
         const montageNameParam = urlParams.get('m') || 'Montage';
@@ -724,10 +784,19 @@ rdr();
         const bookmarkletSource = document.getElementById('bookmarklet-source').textContent.trim();
         document.getElementById('bookmarklet-link').href = 'javascript:' + encodeURIComponent(bookmarkletSource);
 
+        const statusText = document.getElementById('status-text');
+
+        let clips = [];
+        let currentClipIndex = 0;
+        let player;
+        let timeChecker;
+        let manualClips = [];
+
         const formatTime = (seconds) => {
             const m = Math.floor(seconds / 60);
             const s = Math.floor(seconds % 60).toString().padStart(2, '0');
-            return `${m}:${s}`;
+            const decimal = Math.round((seconds % 1) * 10);
+            return decimal ? `${m}:${s}.${decimal}` : `${m}:${s}`;
         };
 
         const safeFileName = (name) => {
@@ -737,178 +806,177 @@ rdr();
                 .replace(/^_+|_+$/g, '') || 'Montage';
         };
 
-        let clips = [];
-        let currentClipIndex = 0;
-        let player;
-        let timeChecker;
+        async function copyTextToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (e) {
+                const temp = document.createElement("textarea");
+                temp.value = text;
+                document.body.appendChild(temp);
+                temp.focus();
+                temp.select();
+                document.execCommand("copy");
+                document.body.removeChild(temp);
+            }
+        }
 
-        const statusText = document.getElementById('status-text');
+        function buildYtDlpCommand(videoIdForCommand, clipsForCommand, montageNameForCommand) {
+            if (!videoIdForCommand || !clipsForCommand || clipsForCommand.length === 0) return '';
 
-        function buildYtDlpCommand() {
-            if (!videoId || clips.length === 0) return '';
+            const safeMontageName = safeFileName(montageNameForCommand);
+            const outputFile = `YT_${safeMontageName}_${videoIdForCommand}.mp4`;
 
-            const safeMontageName = safeFileName(montageNameParam);
-            const outputFile = `YT_${safeMontageName}_${videoId}.mp4`;
-
-            const sectionLines = clips
+            const sectionLines = clipsForCommand
                 .map(c => `  --download-sections "*${c.start}-${c.end}" \\`)
                 .join('\n');
 
             return `yt-dlp -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" \\
 ${sectionLines}
   --force-keyframes-at-cuts \\
-  "https://www.youtube.com/watch?v=${videoId}" \\
+  --merge-output-format mp4 \\
+  "https://www.youtube.com/watch?v=${videoIdForCommand}" \\
   -o "part_%(autonumber)02d.%(ext)s" \\
   && (for f in part_*.mp4; do echo "file '$f'"; done) > inputs.txt \\
   && ffmpeg -f concat -safe 0 -i inputs.txt -c copy "${outputFile}" \\
   && rm part_*.mp4 inputs.txt`;
         }
-		function showYtDlpModal(cmd) {
-    const existing = document.getElementById('yt-dlp-modal');
-    if (existing) existing.remove();
 
-    const modal = document.createElement('div');
-    modal.id = 'yt-dlp-modal';
-    modal.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.75);
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: sans-serif;
-    `;
+        function showYtDlpModal(cmd) {
+            const existing = document.getElementById('yt-dlp-modal');
+            if (existing) existing.remove();
 
-    const box = document.createElement('div');
-    box.style.cssText = `
-        width: 90%;
-        max-width: 760px;
-        background: #111;
-        color: white;
-        border: 1px solid #444;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-    `;
+            const modal = document.createElement('div');
+            modal.id = 'yt-dlp-modal';
+            modal.style.cssText = `
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.75);
+                z-index: 999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: sans-serif;
+                padding: 14px;
+                box-sizing: border-box;
+            `;
 
-    const title = document.createElement('h2');
-    title.textContent = 'Export yt-dlp Command';
-    title.style.marginTop = '0';
+            const box = document.createElement('div');
+            box.style.cssText = `
+                width: 100%;
+                max-width: 760px;
+                background: #111;
+                color: white;
+                border: 1px solid #444;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+                box-sizing: border-box;
+            `;
 
-    const desc = document.createElement('p');
-    desc.textContent = 'Copy this command, or open Google Colab to run it.';
-    desc.style.color = '#aaa';
+            const title = document.createElement('h2');
+            title.textContent = 'Export yt-dlp Command';
+            title.style.marginTop = '0';
 
-    const textarea = document.createElement('textarea');
-    textarea.value = cmd;
-    textarea.readOnly = true;
-    textarea.style.cssText = `
-        width: 100%;
-        height: 260px;
-        background: #000;
-        color: #0f0;
-        border: 1px solid #333;
-        border-radius: 8px;
-        padding: 12px;
-        box-sizing: border-box;
-        font-family: monospace;
-        font-size: 13px;
-        resize: vertical;
-        white-space: pre;
-    `;
+            const desc = document.createElement('p');
+            desc.textContent = 'Copy this command, then optionally open Google Colab to run it.';
+            desc.style.color = '#aaa';
 
-    const buttons = document.createElement('div');
-    buttons.style.cssText = `
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-    `;
+            const textarea = document.createElement('textarea');
+            textarea.value = cmd;
+            textarea.readOnly = true;
+            textarea.style.cssText = `
+                width: 100%;
+                height: 260px;
+                background: #000;
+                color: #0f0;
+                border: 1px solid #333;
+                border-radius: 8px;
+                padding: 12px;
+                box-sizing: border-box;
+                font-family: monospace;
+                font-size: 13px;
+                resize: vertical;
+                white-space: pre;
+            `;
 
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copy Command';
-    copyBtn.style.cssText = `
-        background: #065fd4;
-        color: white;
-        border: none;
-        padding: 10px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-    `;
+            const buttons = document.createElement('div');
+            buttons.style.cssText = `
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 15px;
+                flex-wrap: wrap;
+            `;
 
-    copyBtn.onclick = async () => {
-        try {
-            await navigator.clipboard.writeText(cmd);
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
-        } catch (e) {
+            const copyBtn = document.createElement('button');
+            copyBtn.textContent = 'Copy Command';
+            copyBtn.style.cssText = `
+                background: #065fd4;
+                color: white;
+                border: none;
+                padding: 10px 14px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+
+            copyBtn.onclick = async () => {
+                await copyTextToClipboard(cmd);
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
+            };
+
+            const colabBtn = document.createElement('button');
+            colabBtn.textContent = 'Go to Colab';
+            colabBtn.style.cssText = `
+                background: #107c10;
+                color: white;
+                border: none;
+                padding: 10px 14px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+
+            colabBtn.onclick = () => {
+                window.open(COLAB_URL, '_blank');
+            };
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.style.cssText = `
+                background: #333;
+                color: white;
+                border: 1px solid #555;
+                padding: 10px 14px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+
+            cancelBtn.onclick = () => modal.remove();
+
+            buttons.appendChild(copyBtn);
+            buttons.appendChild(colabBtn);
+            buttons.appendChild(cancelBtn);
+
+            box.appendChild(title);
+            box.appendChild(desc);
+            box.appendChild(textarea);
+            box.appendChild(buttons);
+
+            modal.appendChild(box);
+            document.body.appendChild(modal);
+
             textarea.focus();
             textarea.select();
-            document.execCommand('copy');
-            copyBtn.textContent = 'Copied!';
-            setTimeout(() => copyBtn.textContent = 'Copy Command', 1200);
         }
-    };
-
-    const colabBtn = document.createElement('button');
-    colabBtn.textContent = 'Go to Colab';
-    colabBtn.style.cssText = `
-        background: #107c10;
-        color: white;
-        border: none;
-        padding: 10px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-    `;
-
-    colabBtn.onclick = () => {
-        window.open(
-            'https://colab.research.google.com/github/bindzume/yt-clipper-bookmarklet/blob/main/YT_Clipper_Exporter.ipynb',
-            '_blank'
-        );
-        modal.remove();
-    };
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.style.cssText = `
-        background: #333;
-        color: white;
-        border: 1px solid #555;
-        padding: 10px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-    `;
-
-    cancelBtn.onclick = () => modal.remove();
-
-    buttons.appendChild(copyBtn);
-    buttons.appendChild(colabBtn);
-    buttons.appendChild(cancelBtn);
-
-    box.appendChild(title);
-    box.appendChild(desc);
-    box.appendChild(textarea);
-    box.appendChild(buttons);
-
-    modal.appendChild(box);
-    document.body.appendChild(modal);
-
-    textarea.focus();
-    textarea.select();
-}
 
         function generateYtDlpCommand() {
-    const cmd = buildYtDlpCommand();
-    if (!cmd) return;
-
-    showYtDlpModal(cmd);
-}
+            const cmd = buildYtDlpCommand(videoId, clips, montageNameParam);
+            if (!cmd) return;
+            showYtDlpModal(cmd);
+        }
 
         document.getElementById('export-btn-player').onclick = generateYtDlpCommand;
         document.getElementById('export-btn-fallback').onclick = generateYtDlpCommand;
@@ -942,14 +1010,14 @@ ${sectionLines}
                 width: '100%',
                 videoId: videoId,
                 playerVars: {
-                    'playsinline': 1,
-                    'start': Math.floor(clips[0].start),
-                    'autoplay': 1,
-                    'controls': 1
+                    playsinline: 1,
+                    start: Math.floor(clips[0].start),
+                    autoplay: 1,
+                    controls: 1
                 },
                 events: {
-                    'onReady': onPlayerReady,
-                    'onError': onPlayerError
+                    onReady: onPlayerReady,
+                    onError: onPlayerError
                 }
             });
         };
@@ -1002,9 +1070,253 @@ ${sectionLines}
             }
         }
 
+        function manualSetMessage(message, isError = false) {
+            const el = document.getElementById("manual-message");
+            if (!el) return;
+
+            el.textContent = message;
+            el.style.color = isError ? "#ff6666" : "#aaa";
+        }
+
+        function parseYouTubeVideoId(url) {
+            try {
+                const trimmed = String(url || "").trim();
+
+                if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+                    return trimmed;
+                }
+
+                const parsed = new URL(trimmed);
+
+                const v = parsed.searchParams.get("v");
+                if (v) return v;
+
+                if (parsed.hostname.includes("youtu.be")) {
+                    const id = parsed.pathname.split("/").filter(Boolean)[0];
+                    if (id) return id;
+                }
+
+                const parts = parsed.pathname.split("/").filter(Boolean);
+
+                const shortsIndex = parts.indexOf("shorts");
+                if (shortsIndex !== -1 && parts[shortsIndex + 1]) {
+                    return parts[shortsIndex + 1];
+                }
+
+                const embedIndex = parts.indexOf("embed");
+                if (embedIndex !== -1 && parts[embedIndex + 1]) {
+                    return parts[embedIndex + 1];
+                }
+
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function parseManualTime(value) {
+            const raw = String(value || "").trim();
+
+            if (!raw) return NaN;
+
+            if (/^\d+(\.\d+)?$/.test(raw)) {
+                return Math.round(parseFloat(raw) * 10) / 10;
+            }
+
+            const parts = raw.split(":").map(p => p.trim());
+
+            if (parts.length < 2 || parts.length > 3) return NaN;
+
+            let seconds = 0;
+
+            if (parts.length === 2) {
+                const minutes = parseFloat(parts[0]);
+                const secs = parseFloat(parts[1]);
+
+                if (Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
+
+                seconds = minutes * 60 + secs;
+            }
+
+            if (parts.length === 3) {
+                const hours = parseFloat(parts[0]);
+                const minutes = parseFloat(parts[1]);
+                const secs = parseFloat(parts[2]);
+
+                if (Number.isNaN(hours) || Number.isNaN(minutes) || Number.isNaN(secs)) return NaN;
+
+                seconds = hours * 3600 + minutes * 60 + secs;
+            }
+
+            return Math.round(seconds * 10) / 10;
+        }
+
+        function buildManualShareLink() {
+            const urlInput = document.getElementById("manual-youtube-url").value;
+            const montageName = document.getElementById("manual-montage-name").value || "Montage";
+            const manualVideoId = parseYouTubeVideoId(urlInput);
+
+            if (!manualVideoId) {
+                throw new Error("Please enter a valid YouTube URL or video ID.");
+            }
+
+            if (manualClips.length === 0) {
+                throw new Error("Please add at least one clip.");
+            }
+
+            const clipsString = manualClips
+                .map(c => `${c.start}-${c.end}`)
+                .join(",");
+
+            const baseUrl = `${window.location.origin}${window.location.pathname}`;
+
+            return `${baseUrl}?v=${encodeURIComponent(manualVideoId)}&m=${encodeURIComponent(montageName)}&clips=${encodeURIComponent(clipsString)}`;
+        }
+
+        function buildManualYtDlpCommand() {
+            const urlInput = document.getElementById("manual-youtube-url").value;
+            const montageName = document.getElementById("manual-montage-name").value || "Montage";
+            const manualVideoId = parseYouTubeVideoId(urlInput);
+
+            if (!manualVideoId) {
+                throw new Error("Please enter a valid YouTube URL or video ID.");
+            }
+
+            if (manualClips.length === 0) {
+                throw new Error("Please add at least one clip.");
+            }
+
+            return buildYtDlpCommand(manualVideoId, manualClips, montageName);
+        }
+
+        function renderManualClips() {
+            const list = document.getElementById("manual-clip-list");
+            if (!list) return;
+
+            list.textContent = "";
+
+            if (manualClips.length === 0) {
+                list.textContent = "No clips added yet.";
+                return;
+            }
+
+            manualClips.forEach((clip, index) => {
+                const row = document.createElement("div");
+                row.className = "manual-clip-item";
+
+                const text = document.createElement("span");
+                text.textContent = `${index + 1}. ${formatTime(clip.start)} - ${formatTime(clip.end)}`;
+
+                const removeBtn = document.createElement("button");
+                removeBtn.className = "manual-btn red";
+                removeBtn.style.padding = "5px 9px";
+                removeBtn.textContent = "Remove";
+
+                removeBtn.onclick = () => {
+                    manualClips.splice(index, 1);
+                    renderManualClips();
+                    manualSetMessage("Clip removed.");
+                };
+
+                row.appendChild(text);
+                row.appendChild(removeBtn);
+                list.appendChild(row);
+            });
+        }
+
+        function initializeManualClipper() {
+            const addBtn = document.getElementById("manual-add-clip");
+            const generateBtn = document.getElementById("manual-generate-command");
+            const copyCommandBtn = document.getElementById("manual-copy-command");
+            const copyShareBtn = document.getElementById("manual-copy-share-link");
+            const openColabBtn = document.getElementById("manual-open-colab");
+            const clearBtn = document.getElementById("manual-clear-clips");
+            const output = document.getElementById("manual-output");
+
+            if (!addBtn) return;
+
+            addBtn.onclick = () => {
+                const startInput = document.getElementById("manual-start");
+                const endInput = document.getElementById("manual-end");
+
+                const start = parseManualTime(startInput.value);
+                const end = parseManualTime(endInput.value);
+
+                if (Number.isNaN(start) || Number.isNaN(end)) {
+                    manualSetMessage("Please enter valid start and end times. Example: 756.7 or 12:36.7", true);
+                    return;
+                }
+
+                if (end <= start) {
+                    manualSetMessage("End time must be after start time.", true);
+                    return;
+                }
+
+                manualClips.push({
+                    start: Math.round(start * 10) / 10,
+                    end: Math.round(end * 10) / 10
+                });
+
+                startInput.value = "";
+                endInput.value = "";
+
+                renderManualClips();
+                manualSetMessage("Clip added.");
+            };
+
+            generateBtn.onclick = () => {
+                try {
+                    const cmd = buildManualYtDlpCommand();
+                    output.value = cmd;
+                    manualSetMessage("Command generated. You can copy it or open Colab.");
+                } catch (e) {
+                    manualSetMessage(e.message, true);
+                }
+            };
+
+            copyCommandBtn.onclick = async () => {
+                try {
+                    const cmd = output.value.trim() || buildManualYtDlpCommand();
+                    output.value = cmd;
+
+                    await copyTextToClipboard(cmd);
+                    manualSetMessage("Command copied. Open Colab and paste it there.");
+                } catch (e) {
+                    manualSetMessage(e.message, true);
+                }
+            };
+
+            copyShareBtn.onclick = async () => {
+                try {
+                    const link = buildManualShareLink();
+                    await copyTextToClipboard(link);
+                    manualSetMessage("Share link copied.");
+                } catch (e) {
+                    manualSetMessage(e.message, true);
+                }
+            };
+
+            openColabBtn.onclick = () => {
+                window.open(COLAB_URL, "_blank");
+            };
+
+            clearBtn.onclick = () => {
+                manualClips = [];
+                output.value = "";
+                renderManualClips();
+                manualSetMessage("All clips cleared.");
+            };
+
+            renderManualClips();
+        }
+
+        initializeManualClipper();
+
         if (!videoId) {
             document.getElementById('install-page').style.display = 'flex';
         } else {
+            document.body.style.height = '100vh';
+            document.body.style.overflow = 'hidden';
             document.getElementById('player-container').style.display = 'block';
             document.getElementById('status-bar').style.display = 'flex';
             loadYouTubeAPI();
