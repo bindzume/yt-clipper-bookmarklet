@@ -757,10 +757,13 @@ const shareRow = mk('div', '', 'display:flex;gap:5px;margin-bottom:5px;'),
     bOpenSh = mk('button', '', 'flex:1;padding:6px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-size:12px;', 'Open Share Link');
 shareRow.appendChild(bCopySh);
 shareRow.appendChild(bOpenSh);
-const bYt = mk('button', '', 'width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;', 'Export yt-dlp Cmd'),
-    bC = mk('button', '', 'width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;', 'Close');
+const bYt=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;','Export yt-dlp Cmd'),
+bD=mk('button','','width:100%;margin-bottom:5px;padding:6px;background:#673ab7;color:white;border:none;border-radius:4px;cursor:pointer;','Open Dashboard'),
+bC=mk('button','','width:100%;padding:6px;background:#cc0000;color:white;border:none;border-radius:4px;cursor:pointer;','Close');
+
 u.appendChild(shareRow);
 u.appendChild(bYt);
+u.appendChild(bD);
 u.appendChild(bC);
 document.body.appendChild(u);
 const updateStartEnd = () => sT.textContent = `Start: ${fT(t)} | End: ${fT(n)}`;
@@ -901,17 +904,315 @@ bOpenSh.onclick = () => {
     let link = getShareLink();
     if (link) window.open(link, '_blank');
 };
-bYt.onclick = () => {
-    let {
-        vD
-    } = getData(), clips = vD.montages[actM];
-    if (!clips || clips.length === 0) return alert('No clips to export.');
-    showCmdModal(buildCmd(clips, actM, d));
+bYt.onclick=()=>{
+    let{vD}=getData(),clips=vD.montages[actM];
+    if(!clips||clips.length===0)return alert('No clips to export.');
+    showCmdModal(buildCmd(clips,actM,d));
 };
-bC.onclick = () => {
+
+bD.onclick=()=>{
+    if(document.getElementById('yt-clipper-dash'))return;
+
+    let D=mk(
+        'div',
+        'yt-clipper-dash',
+        'position:fixed;top:5%;left:50%;transform:translateX(-50%);width:90%;max-width:850px;height:90%;background:#111;color:white;z-index:9999998;border-radius:12px;padding:20px;box-sizing:border-box;font-family:sans-serif;box-shadow:0 10px 50px rgba(0,0,0,.9);display:flex;flex-direction:column;border:1px solid #444;'
+    );
+
+    let H=mk(
+        'div',
+        '',
+        'display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333;padding-bottom:15px;margin-bottom:15px;'
+    );
+
+    H.appendChild(mk('h2','','margin:0;','📚 Clip Dashboard'));
+
+    let cD=mk(
+        'button',
+        '',
+        'background:none;color:#aaa;border:none;font-size:28px;cursor:pointer;',
+        '×'
+    );
+
+    cD.onclick=()=>D.remove();
+
+    H.appendChild(cD);
+    D.appendChild(H);
+
+    let T=mk(
+        'div',
+        '',
+        'margin-bottom:15px;display:flex;gap:10px;flex-wrap:wrap;'
+    );
+
+    let bEx=mk(
+        'button',
+        '',
+        'padding:8px 15px;background:#065fd4;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;',
+        '⬇️ Export JSON'
+    );
+
+    let bIm=mk(
+        'button',
+        '',
+        'padding:8px 15px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:bold;',
+        '⬆️ Import JSON'
+    );
+
+    T.appendChild(bEx);
+    T.appendChild(bIm);
+    D.appendChild(T);
+
+    let L=mk(
+        'div',
+        '',
+        'flex:1;overflow-y:auto;background:#1a1a1a;border-radius:8px;padding:15px;'
+    );
+
+    D.appendChild(L);
+
+    const clipDuration=clips=>{
+        return clips.reduce((total,c)=>total+Math.max(0,c.end-c.start),0);
+    };
+
+    const fmtDur=seconds=>{
+        seconds=Math.max(0,seconds||0);
+        let h=Math.floor(seconds/3600);
+        let m=Math.floor((seconds%3600)/60);
+        let s=Math.floor(seconds%60).toString().padStart(2,'0');
+        return h>0?`${h}:${m.toString().padStart(2,'0')}:${s}`:`${m}:${s}`;
+    };
+
+    const rL=()=>{
+        L.textContent='';
+
+        let lib=getLib();
+        let vids=Object.keys(lib);
+
+        if(vids.length===0){
+            L.appendChild(
+                mk(
+                    'div',
+                    '',
+                    'padding:30px;text-align:center;color:#666;',
+                    'No saved clips yet.'
+                )
+            );
+            return;
+        }
+
+        let renderedAny=false;
+
+        vids.forEach(v=>{
+            let V=lib[v];
+
+            if(!V)return;
+
+            if(V.clips){
+                V.montages={Default:V.clips};
+                delete V.clips;
+                lib[v]=V;
+                saveLib(lib);
+            }
+
+            if(!V.montages)return;
+
+            let montageNames=Object.keys(V.montages).filter(mName=>{
+                return V.montages[mName]&&V.montages[mName].length>0;
+            });
+
+            if(montageNames.length===0)return;
+
+            renderedAny=true;
+
+            let card=mk(
+                'div',
+                '',
+                'background:#2a2a2a;margin-bottom:15px;padding:15px;border-radius:8px;border:1px solid #333;'
+            );
+
+            card.appendChild(
+                mk(
+                    'div',
+                    '',
+                    'font-weight:bold;font-size:16px;margin-bottom:10px;',
+                    V.title||`Video ID: ${v}`
+                )
+            );
+
+            montageNames.forEach(mName=>{
+                let mClips=V.montages[mName];
+
+                let row=mk(
+                    'div',
+                    '',
+                    'display:flex;justify-content:space-between;align-items:center;background:#111;padding:10px;border-radius:6px;margin-bottom:6px;gap:10px;'
+                );
+
+                let info=mk('div','','flex:1;min-width:0;');
+
+                info.appendChild(
+                    mk(
+                        'div',
+                        '',
+                        'font-weight:bold;font-size:14px;color:#3ea6ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;',
+                        mName
+                    )
+                );
+
+                info.appendChild(
+                    mk(
+                        'div',
+                        '',
+                        'color:#aaa;font-size:12px;',
+                        `${mClips.length} clip(s) • ${fmtDur(clipDuration(mClips))}`
+                    )
+                );
+
+                let actions=mk(
+                    'div',
+                    '',
+                    'display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;'
+                );
+
+                let play=mk(
+                    'a',
+                    '',
+                    'padding:6px 10px;background:#fff;color:#000;text-decoration:none;border-radius:20px;font-weight:bold;font-size:12px;white-space:nowrap;',
+                    '▶ Play'
+                );
+
+                play.href=`${B}?v=${v}&m=${encodeURIComponent(mName)}&clips=${encodeURIComponent(mClips.map(c=>`${c.start}-${c.end}`).join(','))}`;
+                play.target='_blank';
+
+                let copy=mk(
+                    'button',
+                    '',
+                    'padding:6px 10px;background:#107c10;color:white;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;',
+                    'Copy Link'
+                );
+
+                copy.onclick=async()=>{
+                    let link=`${B}?v=${v}&m=${encodeURIComponent(mName)}&clips=${encodeURIComponent(mClips.map(c=>`${c.start}-${c.end}`).join(','))}`;
+                    await copyText(link);
+                    copy.textContent='Copied!';
+                    setTimeout(()=>copy.textContent='Copy Link',1200);
+                };
+
+                let exp=mk(
+                    'button',
+                    '',
+                    'padding:6px 10px;background:#28a745;color:white;border:none;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;',
+                    'Export'
+                );
+
+                exp.onclick=()=>showCmdModal(buildCmd(mClips,mName,v));
+
+                let del=mk(
+                    'button',
+                    '',
+                    'padding:6px 10px;background:transparent;color:#cc0000;border:1px solid #cc0000;border-radius:4px;cursor:pointer;white-space:nowrap;font-size:12px;',
+                    'Delete'
+                );
+
+                del.onclick=()=>{
+                    if(confirm(`Delete montage '${mName}'?`)){
+                        let ll=getLib();
+
+                        if(ll[v]&&ll[v].montages){
+                            delete ll[v].montages[mName];
+
+                            if(Object.keys(ll[v].montages).length===0){
+                                delete ll[v];
+                            }
+
+                            saveLib(ll);
+                            rL();
+                            render();
+                        }
+                    }
+                };
+
+                actions.appendChild(play);
+                actions.appendChild(copy);
+                actions.appendChild(exp);
+                actions.appendChild(del);
+
+                row.appendChild(info);
+                row.appendChild(actions);
+                card.appendChild(row);
+            });
+
+            L.appendChild(card);
+        });
+
+        if(!renderedAny){
+            L.appendChild(
+                mk(
+                    'div',
+                    '',
+                    'padding:30px;text-align:center;color:#666;',
+                    'No saved clips yet.'
+                )
+            );
+        }
+    };
+
+    bEx.onclick=()=>{
+        let a=document.createElement('a');
+
+        a.href='data:text/json;charset=utf-8,'+encodeURIComponent(
+            JSON.stringify(getLib(),null,2)
+        );
+
+        a.download='yt-clipper-backup.json';
+        a.click();
+    };
+
+    bIm.onclick=()=>{
+        let input=document.createElement('input');
+        input.type='file';
+        input.accept='.json';
+
+        input.onchange=e=>{
+            let file=e.target.files[0];
+            if(!file)return;
+
+            let reader=new FileReader();
+
+            reader.onload=ev=>{
+                try{
+                    let incoming=JSON.parse(ev.target.result);
+                    let current=getLib();
+
+                    saveLib({...current,...incoming});
+
+                    rL();
+                    render();
+                    alert('Import successful!');
+                }catch(err){
+                    alert('Invalid JSON file.');
+                }
+            };
+
+            reader.readAsText(file);
+        };
+
+        input.click();
+    };
+
+    rL();
+    document.body.appendChild(D);
+};
+
+bC.onclick=()=>{
     u.remove();
-    let modal = document.getElementById('yt-dlp-modal');
-    if (modal) modal.remove();
+
+    let modal=document.getElementById('yt-dlp-modal');
+    if(modal)modal.remove();
+
+    let dash=document.getElementById('yt-clipper-dash');
+    if(dash)dash.remove();
 };
 render();
 })();
